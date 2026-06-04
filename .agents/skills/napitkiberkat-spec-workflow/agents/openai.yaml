@@ -1,0 +1,4 @@
+interface:
+  display_name: "Метод specs NapitkiBerkat"
+  short_description: "Spec -> plan -> code для NapitkiBerkat"
+  default_prompt: "Используй $napitkiberkat-spec-workflow: сначала прочитай AGENTS.md и нужные specs проекта NapitkiBerkat, потом планируй или пиши код."
