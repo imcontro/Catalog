@@ -26,6 +26,7 @@
 
 - global spec;
 - feature specs;
+- design spec;
 - technical specs;
 - user stories;
 - старый HTML-каталог как источник данных;

@@ -4,7 +4,7 @@
 
 Этот документ описывает общий технический подход к проекту **Каталог NapitkiBerkat**.
 
-Он не описывает дизайн интерфейса и не является планом разработки.
+Он не описывает детали дизайна интерфейса и не является планом разработки.
 
 Задача technical specs - зафиксировать, как feature specs будут превращаться в работающую систему:
 
@@ -32,7 +32,13 @@ Feature specs:
 - `docs/features/06-admin-products.feature-spec.md`
 - `docs/features/07-empty-and-error-states.feature-spec.md`
 
-Если technical spec противоречит feature spec, нужно остановиться и уточнить требование.
+Design spec:
+
+- `docs/design/00-design-spec.md`
+
+Если technical spec противоречит feature spec или связанному design spec, нужно остановиться и уточнить требование.
+
+Если техническое решение влияет на внешний вид, оно должно учитывать design spec.
 
 ## 3. Общая архитектура
 

@@ -28,8 +28,9 @@
 
 - `docs/00-global-spec.md` - общее понимание проекта;
 - `docs/features/` - подробные feature specs;
+- `docs/design/` - design specs, логотип, брендовые цвета, визуальные правила и процесс дизайн-макетов;
 - `docs/technical/` - technical specs;
-- `docs/user-stories/` - user stories.
+- `docs/user-stories/` - user stories;
 - `docs/work-plans/` - активные и завершенные планы разработки;
 - `docs/roadmap/` - хронологическая дорожная карта выполненных работ;
 - `.agents/skills/napitkiberkat-spec-workflow/` - project skill с правилами работы по specs.
@@ -47,6 +48,7 @@
 - Не смешивать разные слои документации без необходимости.
 - Global spec должен оставаться общим и не дублировать все детали feature specs.
 - Feature specs описывают поведение функций.
+- Design specs описывают визуальный стиль, логотип, брендовые цвета, UI-принципы и процесс утверждения дизайн-правок.
 - Technical specs описывают техническую реализацию уже согласованного поведения.
 - User stories проверяют реальные пути пользователей и не должны добавлять новую логику сами по себе.
 
@@ -179,7 +181,7 @@ Commit, push и Pull Request можно делать только после т�
 AI-агент должен:
 
 1. Сначала использовать project skill `napitkiberkat-spec-workflow` из `.agents/skills/napitkiberkat-spec-workflow/` как рабочий порядок для задач по документации, планам и разработке.
-2. Понять, к какому слою относится задача: spec, user stories, technical spec, work plan или code.
+2. Понять, к какому слою относится задача: spec, design spec, user stories, technical spec, work plan или code.
 3. Проверить существующие документы.
 4. Убедиться, что задача не противоречит утвержденным решениям.
 5. Если задача неясна, сначала уточнить.
