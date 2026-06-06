@@ -6,6 +6,38 @@
 
 ## Записи
 
+### 2026-06-06 - Подготовка импорта старого каталога
+
+- Work plan: `docs/work-plans/completed/2026-06-06-catalog-import-preparation.work-plan.md`
+- Ветка: `feature/catalog-import-preparation`
+- Pull Request:
+- Области: data-supabase
+
+Сделано:
+
+- Добавлена валидация draft-данных старого каталога.
+- Добавлен dry-run импорта без записи в Supabase.
+- Подготовлен маппинг категорий старого каталога на категории проекта.
+- Добавлена проверка фото, черновиков, дублей товаров и дублей вкусов.
+- Подготовлен отчет `data/import/old-catalog-import-preparation-report.md`.
+- Реальная запись в Supabase защищена отдельным confirm-флагом и не запускалась в рамках этого plan.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `npm.cmd run catalog:import:validate`
+- `npm.cmd run catalog:import:dry-run`
+- `git diff --check`
+- Владелец проверил результат и попросил сделать push.
+
+Заметки:
+
+- Dry-run показал 7 найденных категорий, 82 images к созданию, 86 товаров к созданию и 108 вкусов к созданию.
+- 82 товара готовы к клиентскому каталогу, 4 товара останутся черновиками из-за отсутствующего основного фото.
+- Финальная загрузка реальных товаров и фото в Supabase остается отдельным следующим work plan.
+
 ### 2026-06-06 - Supabase и база данных
 
 - Work plan: `docs/work-plans/completed/2026-06-06-supabase-database.work-plan.md`
