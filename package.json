@@ -11,7 +11,9 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:check": "tsx scripts/check-database.ts",
-    "storage:ensure": "tsx scripts/ensure-storage-bucket.ts"
+    "storage:ensure": "tsx scripts/ensure-storage-bucket.ts",
+    "catalog:import:validate": "tsx scripts/import-old-catalog.ts --validate",
+    "catalog:import:dry-run": "tsx scripts/import-old-catalog.ts --dry-run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
