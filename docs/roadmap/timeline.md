@@ -6,6 +6,42 @@
 
 ## Записи
 
+### 2026-06-06 - Загрузка данных старого каталога в Supabase
+
+- Work plan: `docs/work-plans/completed/2026-06-06-catalog-data-import.work-plan.md`
+- Ветка: `feature/catalog-data-import`
+- Pull Request:
+- Области: data-supabase
+
+Сделано:
+
+- В подтвержденный тестовый Supabase загружены реальные данные старого каталога.
+- В Supabase Postgres записаны 86 товаров и 108 вкусов.
+- В Supabase Storage bucket `product-images` загружены 82 фото в папку `old-catalog/`.
+- Добавлена команда проверки результата импорта `npm.cmd run catalog:import:check`.
+- Подготовлен отчет `data/import/old-catalog-import-result-report.md`.
+- Обновлен preparation-report после повторного dry-run: повторный запуск обновляет существующие записи, а не создает дубли.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `npm.cmd run storage:ensure`
+- `npm.cmd run catalog:import:validate`
+- `npm.cmd run catalog:import:dry-run`
+- `npm.cmd run db:check`
+- `npm.cmd run catalog:import:check`
+- `git diff --check`
+- Владелец проверил результат и попросил сделать push.
+
+Заметки:
+
+- `npm.cmd run catalog:import:check` подтвердил 7 категорий, 86 товаров, 108 вкусов, 82 images и 82 файла в Storage.
+- Публичные ссылки открываются для 82 из 82 импортированных фото.
+- 4 товара остались черновиками из-за отсутствующего основного фото: `горная 5л`, `К-13`, `родники 0,5л`, `южания 0.2 детский`.
+- Боевой Supabase не использовался в рамках этого work plan.
+
 ### 2026-06-06 - Подготовка импорта старого каталога
 
 - Work plan: `docs/work-plans/completed/2026-06-06-catalog-import-preparation.work-plan.md`

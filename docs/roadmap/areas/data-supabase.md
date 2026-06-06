@@ -4,6 +4,27 @@
 
 ## Записи
 
+### 2026-06-06 - Загрузка данных старого каталога в Supabase
+
+- Work plan: `docs/work-plans/completed/2026-06-06-catalog-data-import.work-plan.md`
+- Ветка: `feature/catalog-data-import`
+- Pull Request:
+
+Сделано:
+
+- Старый каталог загружен в подтвержденный тестовый Supabase.
+- В базе появились 86 товаров, 108 вкусов и 82 записи images с путями `old-catalog/`.
+- В Storage bucket `product-images` загружены 82 файла.
+- Добавлен скрипт `scripts/check-catalog-import.ts` для проверки результата импорта.
+- Добавлен отчет результата импорта.
+
+Проверено:
+
+- Повторный dry-run показывает `0` записей к созданию и обновление существующих записей.
+- `npm.cmd run catalog:import:check` подтвердил counts базы, Storage и публичное чтение фото.
+- Публичные ссылки открываются для 82 из 82 импортированных фото.
+- 4 товара без основного фото остались в статусе `draft`.
+
 ### 2026-06-06 - Подготовка импорта старого каталога
 
 - Work plan: `docs/work-plans/completed/2026-06-06-catalog-import-preparation.work-plan.md`
