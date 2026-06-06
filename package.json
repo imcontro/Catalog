@@ -13,7 +13,8 @@
     "db:check": "tsx scripts/check-database.ts",
     "storage:ensure": "tsx scripts/ensure-storage-bucket.ts",
     "catalog:import:validate": "tsx scripts/import-old-catalog.ts --validate",
-    "catalog:import:dry-run": "tsx scripts/import-old-catalog.ts --dry-run"
+    "catalog:import:dry-run": "tsx scripts/import-old-catalog.ts --dry-run",
+    "catalog:import:check": "tsx scripts/check-catalog-import.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.107.0",
