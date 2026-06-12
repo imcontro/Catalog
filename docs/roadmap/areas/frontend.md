@@ -4,6 +4,28 @@
 
 ## Записи
 
+### 2026-06-12 - Оформление заказа и WhatsApp
+
+- Work plan: `docs/work-plans/completed/2026-06-12-checkout-whatsapp.work-plan.md`
+- Ветка: `feature/checkout-whatsapp`
+- Pull Request:
+
+Сделано:
+
+- Добавлена клиентская страница `/checkout`.
+- Добавлена React-логика чтения корзины из `localStorage`, актуализации позиций и отправки WhatsApp-ссылки.
+- В корзину добавлена кнопка перехода **Оформить заказ**.
+- Добавлены русские ошибки для пустой корзины, отсутствующего адреса, отсутствующего способа оплаты и ошибки открытия WhatsApp.
+- Добавлена очистка локальной корзины после открытия WhatsApp.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- HTTP 200 для `/checkout`.
+- Владелец проверил локальный сценарий оформления.
+
 ### 2026-06-12 - Корзина клиента
 
 - Work plan: `docs/work-plans/completed/2026-06-11-cart.work-plan.md`
