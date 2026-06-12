@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type {
   ClientCatalogData,
@@ -620,6 +621,7 @@ function CartPanel({
     (sum, line) => sum + line.priceRub * line.quantity,
     0
   );
+  const canOpenCheckout = availableLines.length > 0 && resolveState !== "loading";
   const hasUnavailableItems = lines.some((line) => !line.isAvailable);
   const hasPriceChanges = lines.some((line) => line.priceChanged);
 
@@ -746,6 +748,16 @@ function CartPanel({
               <p>{getDeliveryHint(totalRub)}</p>
             ) : null}
           </div>
+
+          {canOpenCheckout ? (
+            <Link className="checkoutButton" href="/checkout">
+              Оформить заказ
+            </Link>
+          ) : (
+            <button className="checkoutButton" disabled type="button">
+              Оформить заказ
+            </button>
+          )}
 
           <button className="clearCartButton" onClick={onClearCart} type="button">
             Очистить корзину
