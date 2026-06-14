@@ -5,10 +5,11 @@ import type {
   ResolvedCartItem
 } from "@/types/cart";
 import { createDatabaseConnection } from "../db/client";
-import { productFlavors, products } from "../db/schema";
+import { images, productFlavors, products } from "../db/schema";
 
 type ProductRow = typeof products.$inferSelect;
 type FlavorRow = typeof productFlavors.$inferSelect;
+type ImageRow = typeof images.$inferSelect;
 
 export async function resolveCartItems(
   requestItems: unknown[]
@@ -32,8 +33,25 @@ export async function resolveCartItems(
       db.select().from(products).where(inArray(products.id, productIds)),
       db.select().from(productFlavors).where(inArray(productFlavors.productId, productIds))
     ]);
+    const imageIds = Array.from(
+      new Set(
+        [
+          ...productRows
+            .map((product) => product.mainImageId)
+            .filter((imageId): imageId is string => imageId !== null),
+          ...flavorRows
+            .map((flavor) => flavor.imageId)
+            .filter((imageId): imageId is string => imageId !== null)
+        ]
+      )
+    );
+    const imageRows =
+      imageIds.length > 0
+        ? await db.select().from(images).where(inArray(images.id, imageIds))
+        : [];
     const productsById = new Map(productRows.map((product) => [product.id, product]));
     const flavorsById = new Map(flavorRows.map((flavor) => [flavor.id, flavor]));
+    const imagesById = new Map(imageRows.map((image) => [image.id, image]));
     const items: ResolvedCartItem[] = [];
     const removedItems: RemovedCartItem[] = [];
 
@@ -41,6 +59,13 @@ export async function resolveCartItems(
       const product = productsById.get(requestItem.productId);
 
       if (!product || !isResolvableProduct(product)) {
+        removedItems.push(toRemovedItem(requestItem, "Позиция больше не доступна в каталоге."));
+        continue;
+      }
+
+      const mainImage = imagesById.get(product.mainImageId);
+
+      if (!mainImage) {
         removedItems.push(toRemovedItem(requestItem, "Позиция больше не доступна в каталоге."));
         continue;
       }
@@ -61,6 +86,11 @@ export async function resolveCartItems(
 
       const priceRub = flavor?.priceRub ?? product.priceRub;
       const flavorName = flavor?.name ?? null;
+      const imageUrl = getCartImageUrl({
+        flavor,
+        imagesById,
+        mainImage
+      });
       const isAvailable =
         product.status === "active" && (!flavor || !flavor.isOutOfStock);
       const unavailableReason = getUnavailableReason(product, flavor);
@@ -73,6 +103,7 @@ export async function resolveCartItems(
         name: product.name,
         flavorName,
         priceRub,
+        imageUrl,
         previousPriceRub: priceChanged ? requestItem.snapshotPriceRub : null,
         priceChanged,
         isAvailable,
@@ -170,6 +201,22 @@ function getUnavailableReason(product: ProductRow, flavor: FlavorRow | undefined
   }
 
   return null;
+}
+
+function getCartImageUrl({
+  flavor,
+  imagesById,
+  mainImage
+}: {
+  flavor: FlavorRow | undefined;
+  imagesById: Map<string, ImageRow>;
+  mainImage: ImageRow;
+}) {
+  if (flavor?.imageId) {
+    return imagesById.get(flavor.imageId)?.publicUrl ?? mainImage.publicUrl;
+  }
+
+  return mainImage.publicUrl;
 }
 
 function toRemovedItem(

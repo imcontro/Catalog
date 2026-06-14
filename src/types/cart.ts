@@ -29,6 +29,7 @@ export type ResolvedCartItem = {
   name: string;
   flavorName: string | null;
   priceRub: number;
+  imageUrl: string;
   previousPriceRub: number | null;
   priceChanged: boolean;
   isAvailable: boolean;
