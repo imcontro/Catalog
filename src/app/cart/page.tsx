@@ -1,10 +1,10 @@
 import { BrandLogo } from "@/components/BrandLogo";
-import { CheckoutClient } from "@/components/checkout/CheckoutClient";
+import { CartPageClient } from "@/components/cart/CartPageClient";
 import { getRequiredServerEnv } from "@/server/env";
 
 export const dynamic = "force-dynamic";
 
-export default function CheckoutPage() {
+export default function CartPage() {
   const whatsAppPhone = normalizeWhatsAppPhone(
     getRequiredServerEnv("WHATSAPP_PHONE")
   );
@@ -13,19 +13,19 @@ export default function CheckoutPage() {
   );
 
   return (
-    <main className="catalogPage checkoutPage">
+    <main className="catalogPage cartPage">
       <header className="topBar">
         <BrandLogo />
       </header>
 
-      <section className="catalogHeader checkoutHeader" aria-labelledby="checkout-title">
+      <section className="catalogHeader cartPageHeader" aria-labelledby="cart-title">
         <div>
-          <p className="sectionKicker">Оформление заказа</p>
-          <h1 id="checkout-title">Адрес, оплата и WhatsApp</h1>
+          <p className="sectionKicker">Корзина</p>
+          <h1 id="cart-title">Проверьте заказ</h1>
         </div>
       </section>
 
-      <CheckoutClient
+      <CartPageClient
         freeDeliveryThresholdRub={freeDeliveryThresholdRub}
         whatsAppPhone={whatsAppPhone}
       />

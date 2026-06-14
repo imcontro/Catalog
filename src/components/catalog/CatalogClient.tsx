@@ -16,7 +16,6 @@ import type {
 
 const allDrinksId = "all";
 const cartStorageKey = "napitki_berkat_cart";
-const freeDeliveryThresholdRub = 8000;
 const emptyCatalogData: ClientCatalogData = {
   categories: [],
   products: []
@@ -64,10 +63,9 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
   const [cartItems, setCartItems] = useState<StoredCartItem[]>([]);
   const [resolvedCart, setResolvedCart] =
     useState<CartResolveResponse>(emptyResolvedCart);
-  const [cartResolveState, setCartResolveState] = useState<
+  const [, setCartResolveState] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     if (initialCatalog) {
@@ -254,7 +252,7 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
     });
   }
 
-  function updateCartQuantity(item: StoredCartItem | ResolvedCartItem, quantity: number) {
+  function updateCartQuantity(item: CartItemIdentity, quantity: number) {
     setCartItems((currentItems) => {
       if (quantity < 1) {
         return currentItems.filter(
@@ -271,14 +269,6 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
           : currentItem
       );
     });
-  }
-
-  function removeCartItem(item: StoredCartItem | ResolvedCartItem) {
-    setCartItems((currentItems) =>
-      currentItems.filter(
-        (currentItem) => getCartItemKey(currentItem) !== getCartItemKey(item)
-      )
-    );
   }
 
   const cartLines = useMemo(
@@ -414,27 +404,9 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
         )}
       </div>
 
-      {cartQuantity > 0 ? (
-        <CartFloatingButton
-          quantity={cartQuantity}
-          onClick={() => setIsCartOpen(true)}
-        />
-      ) : null}
+      <CartTopIconButton quantity={cartQuantity} />
 
-      {isCartOpen ? (
-        <div className="cartOverlay" onClick={() => setIsCartOpen(false)}>
-          <CartPanel
-            cartHydrated={cartHydrated}
-            lines={cartLines}
-            onClearCart={() => setCartItems([])}
-            onClose={() => setIsCartOpen(false)}
-            onDecrease={(line) => updateCartQuantity(line, line.quantity - 1)}
-            onIncrease={(line) => updateCartQuantity(line, line.quantity + 1)}
-            onRemove={removeCartItem}
-            resolveState={cartResolveState}
-          />
-        </div>
-      ) : null}
+      {cartQuantity > 0 ? <CartFloatingButton quantity={cartQuantity} /> : null}
     </section>
   );
 }
@@ -574,197 +546,38 @@ function ProductCard({
   );
 }
 
-function CartFloatingButton({
-  quantity,
-  onClick
-}: {
-  quantity: number;
-  onClick: () => void;
-}) {
+function CartTopIconButton({ quantity }: { quantity: number }) {
   return (
-    <button
-      aria-label={`Открыть корзину, выбрано ${quantity} уп`}
-      className="cartFloatingButton"
-      onClick={onClick}
-      type="button"
+    <Link
+      aria-label={
+        quantity > 0
+          ? `Открыть корзину, выбрано ${quantity} уп`
+          : "Открыть корзину"
+      }
+      className="cartTopIconButton"
+      href="/cart"
     >
       <span className="cartFloatingIcon" aria-hidden="true" />
-      <span className="cartFloatingBadge" aria-hidden="true">
-        {quantity}
-      </span>
-    </button>
+      {quantity > 0 ? (
+        <span className="cartFloatingBadge" aria-hidden="true">
+          {quantity}
+        </span>
+      ) : null}
+    </Link>
   );
 }
 
-function CartPanel({
-  cartHydrated,
-  lines,
-  resolveState,
-  onIncrease,
-  onDecrease,
-  onRemove,
-  onClearCart,
-  onClose
-}: {
-  cartHydrated: boolean;
-  lines: CartLine[];
-  resolveState: "idle" | "loading" | "ready" | "error";
-  onIncrease: (line: CartLine) => void;
-  onDecrease: (line: CartLine) => void;
-  onRemove: (line: CartLine) => void;
-  onClearCart: () => void;
-  onClose: () => void;
-}) {
-  const availableLines = lines.filter((line) => line.isAvailable);
-  const totalQuantity = lines.reduce((sum, line) => sum + line.quantity, 0);
-  const totalRub = availableLines.reduce(
-    (sum, line) => sum + line.priceRub * line.quantity,
-    0
-  );
-  const canOpenCheckout = availableLines.length > 0 && resolveState !== "loading";
-  const hasUnavailableItems = lines.some((line) => !line.isAvailable);
-  const hasPriceChanges = lines.some((line) => line.priceChanged);
-
+function CartFloatingButton({ quantity }: { quantity: number }) {
   return (
-    <aside
-      aria-label="Корзина"
-      aria-modal="true"
-      className="cartPanel"
-      onClick={(event) => event.stopPropagation()}
-      role="dialog"
+    <Link
+      aria-label={`Перейти в корзину, выбрано ${quantity} уп`}
+      className="cartFloatingButton"
+      href="/cart"
     >
-      <div className="cartHeader">
-        <div>
-          <span>Заказ</span>
-          <h2>Корзина</h2>
-        </div>
-        <div className="cartHeaderActions">
-          <strong>{totalQuantity} уп</strong>
-          <button className="cartCloseButton" onClick={onClose} type="button">
-            Закрыть
-          </button>
-        </div>
-      </div>
-
-      {resolveState === "loading" && lines.length > 0 ? (
-        <p className="cartSyncState">Обновляем корзину.</p>
-      ) : null}
-
-      {resolveState === "error" ? (
-        <p className="cartAlert">Не удалось обновить корзину. Попробуйте позже.</p>
-      ) : null}
-
-      {hasPriceChanges ? (
-        <p className="cartAlert">Цены в корзине обновлены до актуальных.</p>
-      ) : null}
-
-      {hasUnavailableItems ? (
-        <p className="cartAlert">
-          Недоступные позиции не входят в сумму товаров.
-        </p>
-      ) : null}
-
-      {!cartHydrated ? (
-        <div className="cartEmpty">
-          <h3>Корзина загружается</h3>
-          <p>Товары появятся через несколько секунд.</p>
-        </div>
-      ) : lines.length === 0 ? (
-        <div className="cartEmpty">
-          <h3>Товары пока не выбраны</h3>
-          <p>Добавьте товары из каталога.</p>
-        </div>
-      ) : (
-        <>
-          <div className="cartList">
-            {lines.map((line) => {
-              const displayName = getCartLineDisplayName(line);
-
-              return (
-                <article
-                  className={
-                    line.isAvailable ? "cartItem" : "cartItem cartItemUnavailable"
-                  }
-                  key={getCartItemKey(line)}
-                >
-                  <div className="cartItemTitleRow">
-                    <h3>{displayName}</h3>
-                    <button
-                      aria-label={`Удалить ${displayName}`}
-                      className="cartRemoveButton"
-                      onClick={() => onRemove(line)}
-                      type="button"
-                    >
-                      Удалить
-                    </button>
-                  </div>
-
-                  <div className="cartItemMeta">
-                    <span>{formatRub(line.priceRub)} за уп</span>
-                    {line.priceChanged && line.previousPriceRub ? (
-                      <span>Было {formatRub(line.previousPriceRub)}</span>
-                    ) : null}
-                  </div>
-
-                  {line.unavailableReason ? (
-                    <p className="cartItemWarning">{line.unavailableReason}</p>
-                  ) : null}
-
-                  <div className="cartItemBottom">
-                    <div className="quantityStepper" aria-label={`Количество ${displayName}`}>
-                      <button
-                        aria-label={`Уменьшить ${displayName}`}
-                        onClick={() => onDecrease(line)}
-                        type="button"
-                      >
-                        -
-                      </button>
-                      <span>{line.quantity} уп</span>
-                      <button
-                        aria-label={`Увеличить ${displayName}`}
-                        onClick={() => onIncrease(line)}
-                        type="button"
-                      >
-                        +
-                      </button>
-                    </div>
-                    <strong>
-                      {line.isAvailable
-                        ? formatRub(line.priceRub * line.quantity)
-                        : "Не входит в сумму"}
-                    </strong>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-
-          <div className="cartTotals">
-            <div>
-              <span>Сумма товаров</span>
-              <strong>{formatRub(totalRub)}</strong>
-            </div>
-            {availableLines.length > 0 ? (
-              <p>{getDeliveryHint(totalRub)}</p>
-            ) : null}
-          </div>
-
-          {canOpenCheckout ? (
-            <Link className="checkoutButton" href="/checkout">
-              Оформить заказ
-            </Link>
-          ) : (
-            <button className="checkoutButton" disabled type="button">
-              Оформить заказ
-            </button>
-          )}
-
-          <button className="clearCartButton" onClick={onClearCart} type="button">
-            Очистить корзину
-          </button>
-        </>
-      )}
-    </aside>
+      <span className="cartFloatingIcon" aria-hidden="true" />
+      <span className="cartFloatingText">Корзина</span>
+      <span className="cartFloatingQuantity">{quantity} уп</span>
+    </Link>
   );
 }
 
@@ -932,23 +745,6 @@ function readStoredCartItems(): StoredCartItem[] {
 
 function getCartItemKey(item: CartItemIdentity) {
   return `${item.productId}:${item.flavorId ?? ""}`;
-}
-
-function getCartLineDisplayName(line: CartLine) {
-  const name = capitalizeDisplayName(line.name);
-  const flavorName = line.flavorName ? capitalizeDisplayName(line.flavorName) : "";
-
-  return flavorName ? `${name} / ${flavorName}` : name;
-}
-
-function getDeliveryHint(totalRub: number) {
-  if (totalRub >= freeDeliveryThresholdRub) {
-    return "Доставка: бесплатно по г. Грозный";
-  }
-
-  return `До бесплатной доставки по г. Грозный осталось ${formatRub(
-    freeDeliveryThresholdRub - totalRub
-  )}`;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
