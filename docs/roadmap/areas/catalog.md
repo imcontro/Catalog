@@ -4,6 +4,29 @@
 
 ## Записи
 
+### 2026-06-18 - Редизайн клиентского интерфейса
+
+- Work plans:
+  - `docs/work-plans/completed/2026-06-17-client-interface-paper-design.work-plan.md`
+  - `docs/work-plans/completed/2026-06-17-reference-layout-draft.work-plan.md`
+  - `docs/work-plans/completed/2026-06-18-client-interface-reference-layout-transfer.work-plan.md`
+- Ветка: `feature/client-interface-redesign`
+- Pull Request:
+
+Сделано:
+
+- Главный каталог `/` получил утвержденный визуальный layout.
+- Обновлены шапка, поиск, горизонтальные категории и карточки товаров.
+- Выбранный вкус остается видимым в названии товара после `/` и оформлен приглушенным цветом.
+- Нижняя кнопка перехода в корзину адаптирована под новый визуальный стиль.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- Владелец проверил локальный каталог.
+
 ### 2026-06-14 - Страница корзины и окно оформления заказа
 
 - Work plan: `docs/work-plans/completed/2026-06-14-cart-page-checkout-modal.work-plan.md`

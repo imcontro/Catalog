@@ -12,7 +12,6 @@ import {
   formatRub,
   getCartItemKey,
   getCartLineDisplayName,
-  getDeliveryHint,
   readStoredCartItems,
   removeResolvedDeletedItems,
   resolveStoredCartItems
@@ -150,6 +149,27 @@ export function CartPageClient({
 
   return (
     <section className="cartPageWorkspace" aria-label="Корзина">
+      <div className="paperCartHeader">
+        <Link aria-label="Вернуться в каталог" className="paperCircleButton" href="/">
+          ‹
+        </Link>
+        <div className="paperCartTitleBlock">
+          <h1>Корзина</h1>
+          <p>
+            {totalQuantity} уп · сумма товаров {formatRub(totalRub)}
+          </p>
+        </div>
+        {lines.length > 0 ? (
+          <button
+            className="paperClearButton"
+            onClick={() => setStoredItems([])}
+            type="button"
+          >
+            Очистить
+          </button>
+        ) : null}
+      </div>
+
       {resolveState === "loading" && lines.length > 0 ? (
         <p className="cartPageNotice">Обновляем корзину.</p>
       ) : null}
@@ -242,7 +262,12 @@ export function CartPageClient({
                     <div className="cartPageItemInfo">
                       <div className="cartPageItemTitleRow">
                         <div>
-                          <h2>{displayName}</h2>
+                          <h2>
+                            <CartLineName
+                              flavorName={line.flavorName}
+                              name={line.name}
+                            />
+                          </h2>
                           <p>
                             {formatRub(line.priceRub)} за уп
                             {line.priceChanged && line.previousPriceRub
@@ -305,23 +330,28 @@ export function CartPageClient({
               <strong>{formatRub(totalRub)}</strong>
             </div>
             <p>
-              {availableLines.length > 0
-                ? getDeliveryHint(totalRub, freeDeliveryThresholdRub)
-                : "В корзине нет доступных позиций."}
+              {formatCartItemCount(lines.length)} · {totalQuantity} уп
             </p>
+            {availableLines.length > 0 ? (
+              <p className="cartSummaryDelivery">
+                {getCartSummaryDeliveryText(totalRub, freeDeliveryThresholdRub)}
+              </p>
+            ) : null}
 
-            <button
-              className="checkoutButton"
-              disabled={!canOpenCheckout}
-              onClick={() => setIsCheckoutOpen(true)}
-              type="button"
-            >
-              Оформить заказ
-            </button>
+            <div className="cartSummaryActions">
+              <Link className="continueShoppingButton" href="/">
+                Продолжить покупки
+              </Link>
 
-            <Link className="continueShoppingButton" href="/">
-              Продолжить покупки
-            </Link>
+              <button
+                className="checkoutButton"
+                disabled={!canOpenCheckout}
+                onClick={() => setIsCheckoutOpen(true)}
+                type="button"
+              >
+                Оформить заказ
+              </button>
+            </div>
           </aside>
         </div>
       )}
@@ -339,6 +369,40 @@ export function CartPageClient({
   );
 }
 
+function CartLineName({
+  name,
+  flavorName
+}: {
+  flavorName: string | null;
+  name: string;
+}) {
+  return (
+    <>
+      {capitalizeCartName(name)}
+      {flavorName ? (
+        <span className="productSelectedFlavor">
+          {" "}
+          / {capitalizeCartName(flavorName)}
+        </span>
+      ) : null}
+    </>
+  );
+}
+
+function getCartSummaryDeliveryText(totalRub: number, freeDeliveryThresholdRub: number) {
+  if (totalRub >= freeDeliveryThresholdRub) {
+    return "Доставка бесплатно по г. Грозный";
+  }
+
+  return `Наберите заказ на ${formatThresholdRub(
+    freeDeliveryThresholdRub
+  )} для бесплатной доставки по г. Грозный`;
+}
+
+function formatThresholdRub(value: number) {
+  return `${value.toLocaleString("ru-RU")} ₽`;
+}
+
 function CartEmptyState({ title, text }: { title: string; text: string }) {
   return (
     <div className="cartPageEmpty">
@@ -349,4 +413,37 @@ function CartEmptyState({ title, text }: { title: string; text: string }) {
       </Link>
     </div>
   );
+}
+
+function capitalizeCartName(value: string) {
+  const firstLetterIndex = value.search(/\p{L}/u);
+
+  if (firstLetterIndex === -1) {
+    return value;
+  }
+
+  return (
+    value.slice(0, firstLetterIndex) +
+    value[firstLetterIndex].toLocaleUpperCase("ru-RU") +
+    value.slice(firstLetterIndex + 1)
+  );
+}
+
+function formatCartItemCount(count: number) {
+  const lastTwoDigits = count % 100;
+  const lastDigit = count % 10;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 14) {
+    return `${count} товаров`;
+  }
+
+  if (lastDigit === 1) {
+    return `${count} товар`;
+  }
+
+  if (lastDigit >= 2 && lastDigit <= 4) {
+    return `${count} товара`;
+  }
+
+  return `${count} товаров`;
 }

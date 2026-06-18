@@ -8,7 +8,6 @@ import {
   capitalizeDisplayName,
   emptyResolvedCart,
   formatRub,
-  getCartLineDisplayName,
   getCheckoutDeliveryText,
   removeResolvedDeletedItems,
   resolveStoredCartItems
@@ -89,14 +88,9 @@ export function CheckoutModal({
     [storedItems, resolvedCart.items]
   );
   const availableLines = lines.filter((line) => line.isAvailable);
-  const totalQuantity = lines.reduce((sum, line) => sum + line.quantity, 0);
   const totalRub = availableLines.reduce(
     (sum, line) => sum + line.priceRub * line.quantity,
     0
-  );
-  const deliveryText = getCheckoutDeliveryText(
-    totalRub,
-    freeDeliveryThresholdRub
   );
   const hasUnavailableItems = lines.some((line) => !line.isAvailable);
   const hasPriceChanges = lines.some((line) => line.priceChanged);
@@ -218,21 +212,16 @@ export function CheckoutModal({
       >
         <div className="checkoutModalHeader">
           <div>
-            <span>Оформление заказа</span>
-            <h2>Адрес, оплата и WhatsApp</h2>
+            <h2>Оформление заказа</h2>
+            <p>Проверьте данные перед отправкой</p>
           </div>
           <button className="checkoutModalClose" onClick={onClose} type="button">
-            Закрыть
+            ×
           </button>
         </div>
 
         <div className="checkoutModalBody">
-          <aside className="checkoutModalSummary" aria-label="Состав заказа">
-            <div className="checkoutBlockHeader">
-              <span>Состав</span>
-              <h3>Ваш заказ</h3>
-            </div>
-
+          <form className="checkoutForm" noValidate onSubmit={handleSubmit}>
             {resolveState === "loading" && storedItems.length > 0 ? (
               <p className="checkoutNotice">Обновляем заказ.</p>
             ) : null}
@@ -260,80 +249,12 @@ export function CheckoutModal({
             ) : null}
 
             {lines.length === 0 ? (
-              <CheckoutEmpty
-                title={
-                  submitState === "sent"
-                    ? "Заказ открыт в WhatsApp"
-                    : "Товары пока не выбраны"
-                }
-                text={
-                  submitState === "sent"
-                    ? "Корзина очищена. Новый заказ можно собрать в каталоге."
-                    : "Добавьте товары из каталога."
-                }
-              />
-            ) : (
-              <>
-                <div className="checkoutList">
-                  {lines.map((line) => (
-                    <article
-                      className={
-                        line.isAvailable
-                          ? "checkoutItem"
-                          : "checkoutItem checkoutItemUnavailable"
-                      }
-                      key={`${line.productId}:${line.flavorId ?? ""}`}
-                    >
-                      <div>
-                        <h4>{getCartLineDisplayName(line)}</h4>
-                        <p>
-                          {line.quantity} уп x {formatRub(line.priceRub)}
-                        </p>
-                        {line.priceChanged && line.previousPriceRub ? (
-                          <p>Было {formatRub(line.previousPriceRub)} за уп</p>
-                        ) : null}
-                        {line.unavailableReason ? (
-                          <p className="checkoutItemWarning">
-                            {line.unavailableReason}
-                          </p>
-                        ) : null}
-                      </div>
-                      <strong>
-                        {line.isAvailable
-                          ? formatRub(line.priceRub * line.quantity)
-                          : "Не отправляется"}
-                      </strong>
-                    </article>
-                  ))}
-                </div>
-
-                <div className="checkoutTotals">
-                  <div>
-                    <span>Всего упаковок</span>
-                    <strong>{totalQuantity} уп</strong>
-                  </div>
-                  <div>
-                    <span>Сумма товаров</span>
-                    <strong>{formatRub(totalRub)}</strong>
-                  </div>
-                  {availableLines.length > 0 ? <p>{deliveryText}</p> : null}
-                </div>
-
-                {availableLines.length === 0 && resolveState !== "loading" ? (
-                  <p className="checkoutAlert">
-                    В корзине нет доступных позиций. Удалите недоступные товары
-                    или добавьте другие.
-                  </p>
-                ) : null}
-              </>
-            )}
-          </aside>
-
-          <form className="checkoutForm" noValidate onSubmit={handleSubmit}>
-            <div className="checkoutBlockHeader">
-              <span>Данные заказа</span>
-              <h3>Куда доставить</h3>
-            </div>
+              <p className="checkoutAlert">
+                {submitState === "sent"
+                  ? "Заказ открыт в WhatsApp. Корзина очищена."
+                  : "Товары пока не выбраны. Добавьте товары из каталога."}
+              </p>
+            ) : null}
 
             <label className="checkoutField">
               <span>Адрес доставки</span>
@@ -376,19 +297,26 @@ export function CheckoutModal({
               </div>
             </fieldset>
 
-            <div className="checkoutDeliveryBox">
-              <span>Доставка</span>
-              <strong>
-                {availableLines.length > 0
-                  ? deliveryText
-                  : "Доставка недоступна без товаров"}
-              </strong>
+            <div className="checkoutTotals">
+              <div>
+                <span>Сумма товаров</span>
+                <strong>{formatRub(totalRub)}</strong>
+              </div>
             </div>
 
             {formError ? <p className="checkoutError">{formError}</p> : null}
             {whatsAppError ? <p className="checkoutError">{whatsAppError}</p> : null}
 
             <button className="sendWhatsAppButton" disabled={!canSubmit} type="submit">
+              <svg
+                aria-hidden="true"
+                className="whatsappIcon"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path d="M5.1 19.1 6 15.8a7.2 7.2 0 1 1 2.6 2.5l-3.5.8Z" />
+                <path d="M9.15 8.45c.18-.38.36-.39.53-.39h.45c.14 0 .36.05.55.42.18.36.62 1.46.67 1.57.05.12.08.25.02.4-.07.15-.1.24-.22.37l-.32.38c-.11.12-.23.25-.1.49.13.24.58.95 1.24 1.54.85.76 1.56.99 1.8 1.1.24.13.38.1.52-.06.14-.16.6-.7.76-.94.16-.24.32-.2.54-.12.22.08 1.4.66 1.64.78.24.12.4.18.46.28.05.1.05.59-.14 1.16-.2.56-1.12 1.08-1.56 1.12-.4.04-.9.06-1.46-.09-.34-.1-.77-.25-1.33-.49-2.34-1.01-3.87-3.36-3.99-3.52-.12-.16-.95-1.26-.95-2.4 0-1.15.6-1.7.82-1.93Z" />
+              </svg>
               {submitState === "submitting"
                 ? "Обновляем заказ"
                 : "Отправить в WhatsApp"}
@@ -396,15 +324,6 @@ export function CheckoutModal({
           </form>
         </div>
       </section>
-    </div>
-  );
-}
-
-function CheckoutEmpty({ title, text }: { title: string; text: string }) {
-  return (
-    <div className="checkoutEmpty">
-      <h3>{title}</h3>
-      <p>{text}</p>
     </div>
   );
 }

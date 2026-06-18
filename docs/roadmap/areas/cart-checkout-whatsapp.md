@@ -4,6 +4,30 @@
 
 ## Записи
 
+### 2026-06-18 - Редизайн клиентского интерфейса
+
+- Work plans:
+  - `docs/work-plans/completed/2026-06-17-client-interface-paper-design.work-plan.md`
+  - `docs/work-plans/completed/2026-06-17-reference-layout-draft.work-plan.md`
+  - `docs/work-plans/completed/2026-06-18-client-interface-reference-layout-transfer.work-plan.md`
+- Ветка: `feature/client-interface-redesign`
+- Pull Request:
+
+Сделано:
+
+- Страница корзины `/cart` приведена к утвержденному визуальному стилю.
+- Окно оформления заказа обновлено визуально и оставлено поверх страницы корзины.
+- Итоговые блоки, предупреждения, поля адреса, выбор оплаты и кнопка WhatsApp получили новый внешний вид.
+- Логика актуализации корзины, проверки адреса и оплаты, открытия WhatsApp и очистки корзины не менялась.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Владелец проверил локальный путь заказа.
+
 ### 2026-06-14 - Страница корзины и окно оформления заказа
 
 - Work plan: `docs/work-plans/completed/2026-06-14-cart-page-checkout-modal.work-plan.md`

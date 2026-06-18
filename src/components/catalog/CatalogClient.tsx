@@ -276,14 +276,14 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
     [cartItems, resolvedCart.items]
   );
   const cartQuantity = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotalRub = cartLines
+    .filter((line) => line.isAvailable)
+    .reduce((sum, line) => sum + line.priceRub * line.quantity, 0);
 
   if (loadState === "loading") {
     return (
       <section className="catalogWorkspace" aria-label="Каталог напитков">
-        <EmptyCatalog
-          title="Каталог загружается"
-          text="Товары появятся через несколько секунд."
-        />
+        <CatalogLoadingState />
       </section>
     );
   }
@@ -302,37 +302,34 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
   return (
     <section className="catalogWorkspace" aria-label="Каталог напитков">
       <div className="catalogMain">
-        <div className="catalogControls">
-          <div className="categoryRail" aria-label="Категории напитков">
-            <button
-              className={
-                selectedCategoryId === allDrinksId
-                  ? "categoryChip categoryChipActive"
-                  : "categoryChip"
-              }
-              onClick={() => updateCatalogState(allDrinksId, searchQuery)}
-              type="button"
-            >
-              Все напитки
-            </button>
-            {catalog.categories.map((category) => (
-              <button
-                className={
-                  selectedCategoryId === category.id
-                    ? "categoryChip categoryChipActive"
-                    : "categoryChip"
-                }
-                key={category.id}
-                onClick={() => updateCatalogState(category.id, searchQuery)}
-                type="button"
-              >
-                {capitalizeDisplayName(category.name)}
-              </button>
-            ))}
+        <div className="paperCatalogHeader">
+          <span aria-hidden="true" className="paperHeaderSpacer" />
+          <div className="paperBrandTitle">
+            <Image
+              alt="NapitkiBerkat"
+              className="paperBrandLogo"
+              height={72}
+              priority
+              src="/brand/logo-napitki-berkat.jpg"
+              width={160}
+            />
           </div>
+          <CartTopIconButton quantity={cartQuantity} />
+          <h1 className="paperCatalogTitle">NapitkiBerkat</h1>
+        </div>
 
+        <div className="catalogControls">
           <label className="searchField">
             <span>Поиск</span>
+            <svg
+              aria-hidden="true"
+              className="searchIcon"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle cx="10.8" cy="10.8" r="5.8" />
+              <path d="m15.2 15.2 4.1 4.1" strokeLinecap="round" />
+            </svg>
             <input
               autoComplete="off"
               onChange={(event) =>
@@ -343,17 +340,39 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
               value={searchQuery}
             />
           </label>
-        </div>
 
-        <div className="catalogMeta" aria-live="polite">
-          <strong>
-            {selectedCategoryId === allDrinksId
-              ? "Все напитки"
-              : selectedCategory
-                ? capitalizeDisplayName(selectedCategory.name)
-                : "Категория"}
-          </strong>
-          {cartQuantity > 0 ? <span>В корзине {cartQuantity} уп</span> : null}
+          <div className="categoryScroller">
+            <div className="categoryRail" aria-label="Категории напитков">
+              <button
+                className={
+                  selectedCategoryId === allDrinksId
+                    ? "categoryChip categoryChipActive"
+                    : "categoryChip"
+                }
+                onClick={() => updateCatalogState(allDrinksId, searchQuery)}
+                type="button"
+              >
+                Все напитки
+              </button>
+              {catalog.categories.map((category) => (
+                <button
+                  className={
+                    selectedCategoryId === category.id
+                      ? "categoryChip categoryChipActive"
+                      : "categoryChip"
+                  }
+                  key={category.id}
+                  onClick={() => updateCatalogState(category.id, searchQuery)}
+                  type="button"
+                >
+                  {capitalizeDisplayName(category.name)}
+                </button>
+              ))}
+            </div>
+            <span aria-hidden="true" className="categoryHint">
+              ›
+            </span>
+          </div>
         </div>
 
         {visibleProducts.length > 0 ? (
@@ -404,9 +423,9 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
         )}
       </div>
 
-      <CartTopIconButton quantity={cartQuantity} />
-
-      {cartQuantity > 0 ? <CartFloatingButton quantity={cartQuantity} /> : null}
+      {cartQuantity > 0 ? (
+        <CartFloatingButton quantity={cartQuantity} totalRub={cartTotalRub} />
+      ) : null}
     </section>
   );
 }
@@ -453,7 +472,7 @@ function ProductCard({
             key={imageUrl}
             loading="lazy"
             onError={() => onImageError(imageUrl)}
-            sizes="(max-width: 800px) calc(100vw - 28px), 280px"
+            sizes="(max-width: 800px) 42vw, 240px"
             src={imageUrl}
             unoptimized
           />
@@ -464,43 +483,39 @@ function ProductCard({
       </div>
 
       <div className="productInfo">
-        <div className="productTitleRow">
-          <h2>
-            {capitalizeDisplayName(product.name)}
-            {selectedFlavor ? (
-              <span className="productSelectedFlavor">
-                {" "}
-                / {capitalizeDisplayName(selectedFlavor.name)}
-              </span>
-            ) : null}
-          </h2>
-          <span className="productPackQuantity">{product.packQuantity} шт в уп</span>
-        </div>
-
         <div className="productPrice">{formatRub(priceRub)}</div>
 
+        <div className="productTitleRow">
+          <h2>
+            <ProductNameWithFlavor
+              flavorName={selectedFlavor?.name ?? null}
+              name={product.name}
+            />
+          </h2>
+          <div className="productMetaLine">
+            <span className="productPackQuantity">{product.packQuantity} шт в уп</span>
+          </div>
+        </div>
+
         {product.hasFlavorChoice ? (
-          <div className="flavorBlock">
+          <label className="flavorBlock">
             <span>Вкус</span>
-            <div className="flavorList">
+            <select
+              className="flavorSelect"
+              onChange={(event) => onSelectFlavor(event.currentTarget.value)}
+              value={selectedFlavor?.id ?? ""}
+            >
               {product.flavors.map((flavor) => (
-                <button
-                  aria-pressed={selectedFlavor?.id === flavor.id}
-                  className={
-                    selectedFlavor?.id === flavor.id
-                      ? "flavorChip flavorChipActive"
-                      : "flavorChip"
-                  }
+                <option
                   disabled={!flavor.isOrderable}
                   key={flavor.id}
-                  onClick={() => onSelectFlavor(flavor.id)}
-                  type="button"
+                  value={flavor.id}
                 >
                   {capitalizeDisplayName(flavor.name)}
-                </button>
+                </option>
               ))}
-            </div>
-          </div>
+            </select>
+          </label>
         ) : null}
 
         <div className="productActions">
@@ -546,6 +561,26 @@ function ProductCard({
   );
 }
 
+function ProductNameWithFlavor({
+  name,
+  flavorName
+}: {
+  flavorName: string | null;
+  name: string;
+}) {
+  return (
+    <>
+      {capitalizeDisplayName(name)}
+      {flavorName ? (
+        <span className="productSelectedFlavor">
+          {" "}
+          / {capitalizeDisplayName(flavorName)}
+        </span>
+      ) : null}
+    </>
+  );
+}
+
 function CartTopIconButton({ quantity }: { quantity: number }) {
   return (
     <Link
@@ -557,7 +592,7 @@ function CartTopIconButton({ quantity }: { quantity: number }) {
       className="cartTopIconButton"
       href="/cart"
     >
-      <span className="cartFloatingIcon" aria-hidden="true" />
+      <CartIcon />
       {quantity > 0 ? (
         <span className="cartFloatingBadge" aria-hidden="true">
           {quantity}
@@ -567,24 +602,82 @@ function CartTopIconButton({ quantity }: { quantity: number }) {
   );
 }
 
-function CartFloatingButton({ quantity }: { quantity: number }) {
+function CartFloatingButton({
+  quantity,
+  totalRub
+}: {
+  quantity: number;
+  totalRub: number;
+}) {
   return (
     <Link
       aria-label={`Перейти в корзину, выбрано ${quantity} уп`}
       className="cartFloatingButton"
       href="/cart"
     >
-      <span className="cartFloatingIcon" aria-hidden="true" />
+      <CartIcon className="cartFloatingSvg" />
       <span className="cartFloatingText">Корзина</span>
-      <span className="cartFloatingQuantity">{quantity} уп</span>
+      <span className="cartFloatingQuantity">
+        {quantity} уп · {formatRub(totalRub)}
+      </span>
     </Link>
+  );
+}
+
+function CartIcon({ className = "cartSvg" }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M6.4 7.6h12.2l-1.05 7.1a2 2 0 0 1-1.98 1.7H9.16a2 2 0 0 1-1.96-1.6L5.35 5.45H3.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="M9.1 7.6a3 3 0 0 1 5.8 0" strokeLinecap="round" />
+      <circle cx="9.9" cy="19.4" r="1" />
+      <circle cx="16.2" cy="19.4" r="1" />
+    </svg>
+  );
+}
+
+function CatalogLoadingState() {
+  return (
+    <div className="catalogStateCard catalogStateCardWide" aria-live="polite">
+      <div className="catalogStateTopLine">
+        <span className="catalogStateBadge">Загрузка</span>
+        <span className="catalogStateSpinner" aria-hidden="true" />
+      </div>
+      <h2>Загружаем каталог</h2>
+      <p>Подготавливаем напитки, цены и доступные вкусы.</p>
+      <div className="catalogLoadingChips" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="catalogLoadingGrid" aria-hidden="true">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div className="catalogLoadingProductCard" key={index}>
+            <span />
+            <strong />
+            <em />
+            <b />
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
 function EmptyCatalog({ title, text }: { title: string; text: string }) {
   return (
-    <div className="emptyCatalog">
-      <span className="emptyMarker" aria-hidden="true" />
+    <div className="emptyCatalog catalogStateCard">
+      <span className="catalogStateIconMuted" aria-hidden="true">
+        0
+      </span>
       <h2>{title}</h2>
       <p>{text}</p>
     </div>
