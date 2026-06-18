@@ -4,6 +4,29 @@
 
 ## Записи
 
+### 2026-06-18 - Редизайн клиентского интерфейса
+
+- Work plans:
+  - `docs/work-plans/completed/2026-06-17-client-interface-paper-design.work-plan.md`
+  - `docs/work-plans/completed/2026-06-17-reference-layout-draft.work-plan.md`
+  - `docs/work-plans/completed/2026-06-18-client-interface-reference-layout-transfer.work-plan.md`
+- Ветка: `feature/client-interface-redesign`
+- Pull Request:
+
+Сделано:
+
+- Добавлен маршрут `/design-draft/reference-layout` для чернового визуального макета.
+- Обновлены React-разметка и CSS основного каталога, страницы корзины и `CheckoutModal`.
+- Каталог получил новый центрированный контейнер, обновленную шапку, поиск, категории, карточки товаров и нижнюю кнопку корзины.
+- Корзина и оформление заказа приведены к утвержденному визуальному стилю без изменения бизнес-логики.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- Владелец проверил локальный интерфейс.
+
 ### 2026-06-14 - Страница корзины и окно оформления заказа
 
 - Work plan: `docs/work-plans/completed/2026-06-14-cart-page-checkout-modal.work-plan.md`
