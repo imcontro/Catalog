@@ -2925,8 +2925,8 @@ textarea:focus-visible {
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 10px 12px;
-  background: #f1f3f2;
-  color: var(--muted);
+  background: #f8faf9;
+  color: var(--ink);
 }
 
 .loginForm button {
@@ -2946,6 +2946,74 @@ textarea:focus-visible {
   margin: 18px 0 0;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.loginError {
+  border: 1px solid #ffd0d0;
+  border-radius: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  background: #fff0f0;
+  color: #9b1c1c;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.adminPage {
+  min-height: 100vh;
+  padding: 28px;
+  background: var(--bg);
+}
+
+.adminShell {
+  display: grid;
+  gap: 18px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.adminHeader,
+.adminStatePanel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.adminHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: center;
+  padding: 22px;
+}
+
+.adminHeader h1,
+.adminStatePanel h2 {
+  margin: 0;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.adminHeader p,
+.adminStatePanel p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.adminLogoutButton {
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 18px;
+  background: var(--charcoal);
+  color: #fffaf4;
+  font-weight: 800;
+}
+
+.adminStatePanel {
+  padding: 22px;
 }
 
 @media (max-width: 800px) {

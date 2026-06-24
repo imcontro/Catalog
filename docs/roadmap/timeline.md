@@ -6,6 +6,38 @@
 
 ## Записи
 
+### 2026-06-24 - Админка: вход
+
+- Work plan: `docs/work-plans/completed/2026-06-24-admin-auth.work-plan.md`
+- Ветка: `feature/admin-auth`
+- Pull Request:
+- Области: admin
+
+Сделано:
+
+- Подключена рабочая форма входа в админку `/admin/login`.
+- Добавлены API `POST /api/admin/login` и `POST /api/admin/logout`.
+- Реализована серверная админская сессия через `httpOnly` cookie.
+- В таблице `admin_sessions` хранится хеш токена сессии, а не сам токен.
+- Закрытая страница `/admin` проверяет сессию на сервере и без входа переводит на `/admin/login`.
+- Добавлена кнопка выхода из админки.
+- В technical spec зафиксирован формат `ADMIN_PASSWORD_HASH`.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `npm.cmd run db:check`
+- `git diff --check`
+- Ручной сценарий входа, защиты `/admin`, выхода и повторного открытия `/admin` после выхода.
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Управление товарами, категориями, вкусами, фото и сортировкой не входило в этот work plan.
+- Тестовые локальные значения `.env` не входят в Git.
+
 ### 2026-06-24 - Формат WhatsApp-сообщения без эмодзи с жирными подписями
 
 - Work plan: `docs/work-plans/completed/2026-06-18-whatsapp-message-format.work-plan.md`
