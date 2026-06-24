@@ -1,4 +1,7 @@
 import { BrandLogo } from "@/components/BrandLogo";
+import { AdminLoginForm } from "@/components/admin/AdminLoginForm";
+
+export const dynamic = "force-dynamic";
 
 export default function AdminLoginPage() {
   return (
@@ -10,26 +13,9 @@ export default function AdminLoginPage() {
           <h1 id="admin-login-title">Вход в управление каталогом</h1>
         </div>
 
-        <form className="loginForm">
-          <label>
-            Логин
-            <input name="login" type="text" autoComplete="username" disabled />
-          </label>
-          <label>
-            Пароль
-            <input
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              disabled
-            />
-          </label>
-          <button type="button" disabled>
-            Войти
-          </button>
-        </form>
+        <AdminLoginForm />
 
-        <p className="loginState">Авторизация будет подключена отдельным этапом.</p>
+        <p className="loginState">Вход доступен только владельцу каталога.</p>
       </section>
     </main>
   );
