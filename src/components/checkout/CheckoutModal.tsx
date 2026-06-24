@@ -353,16 +353,20 @@ function buildWhatsAppMessage({
     .join("\n");
 
   return [
-    "Добрый день! Хочу сделать заказ!",
+    "*Добрый день! Хочу сделать заказ!*",
     "",
-    "Товары:",
+    "*Товары:*",
     productLines,
     "",
-    `Сумма товаров: ${formatRub(totalRub)}`,
-    deliveryText,
-    `Адрес: ${address}`,
-    `Оплата: ${getPaymentMethodLabel(paymentMethod)}`
+    `*Сумма товаров:* ${formatRub(totalRub)}`,
+    `*Доставка:* ${getDeliveryMessageValue(deliveryText)}`,
+    `*Адрес:* ${address}`,
+    `*Оплата:* ${getPaymentMethodLabel(paymentMethod)}`
   ].join("\n");
+}
+
+function getDeliveryMessageValue(deliveryText: string) {
+  return deliveryText.replace(/^Доставка:\s*/, "");
 }
 
 function buildWhatsAppUrl(phone: string, message: string) {
