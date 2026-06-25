@@ -3121,6 +3121,34 @@ textarea:focus-visible {
   color: #fffaf4;
 }
 
+.adminCategoryTabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  background: #f8faf9;
+  scrollbar-width: thin;
+}
+
+.adminCategoryChip {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: var(--surface);
+  color: var(--muted);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.adminCategoryChipActive {
+  border-color: rgba(19, 127, 117, 0.28);
+  background: rgba(19, 127, 117, 0.1);
+  color: var(--teal);
+}
+
 .adminSearchForm {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -3173,31 +3201,32 @@ textarea:focus-visible {
 
 .adminProductList {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
 }
 
 .adminProductRow {
   display: grid;
-  grid-template-columns: 72px minmax(220px, 1fr) minmax(160px, 0.5fr) minmax(150px, 0.45fr);
-  gap: 14px;
-  align-items: center;
+  min-height: 100%;
+  grid-template-rows: auto 1fr auto auto;
+  gap: 11px;
   border: 1px solid var(--line);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   background: var(--surface);
-  box-shadow: 0 8px 18px rgba(24, 21, 19, 0.04);
+  box-shadow: 0 10px 22px rgba(24, 21, 19, 0.05);
 }
 
 .adminProductImageFrame {
   display: flex;
-  width: 72px;
-  height: 72px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   align-items: center;
   justify-content: center;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: #f1f3f2;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f3f2 100%);
   color: var(--muted);
   font-size: 0.76rem;
   font-weight: 900;
@@ -3205,8 +3234,10 @@ textarea:focus-visible {
 }
 
 .adminProductImage {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  padding: 5px;
+  padding: 10px;
 }
 
 .adminProductMain,
@@ -3220,7 +3251,7 @@ textarea:focus-visible {
 .adminProductMain h2 {
   margin: 0;
   color: var(--ink);
-  font-size: 1rem;
+  font-size: 0.98rem;
   line-height: 1.25;
   overflow-wrap: anywhere;
 }
@@ -3230,9 +3261,28 @@ textarea:focus-visible {
 .adminProductFlags span {
   margin: 0;
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 0.86rem;
   font-weight: 800;
   line-height: 1.35;
+}
+
+.adminProductMeta {
+  grid-template-columns: 1fr;
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+}
+
+.adminProductMeta strong {
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1.2;
+}
+
+.adminProductFlags {
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .adminStatus {
@@ -3279,6 +3329,104 @@ textarea:focus-visible {
 @media (max-width: 800px) {
   .catalogPage {
     padding: 14px;
+  }
+
+  .adminPage {
+    padding: 12px;
+  }
+
+  .adminShell {
+    max-width: 100%;
+    gap: 12px;
+  }
+
+  .adminHeader {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .adminHeader .adminLogoutButton {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .adminHeader h1 {
+    font-size: 1.35rem;
+  }
+
+  .adminHeader p {
+    font-size: 0.9rem;
+  }
+
+  .adminSectionGrid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .adminSectionCard {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .adminListHeader {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .adminListHeader h1 {
+    font-size: 1.35rem;
+  }
+
+  .adminListHeader p {
+    font-size: 0.9rem;
+  }
+
+  .adminCountBadge {
+    width: fit-content;
+  }
+
+  .adminTabs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
+  }
+
+  .adminTabs a {
+    min-width: 0;
+    padding: 9px 6px;
+    text-align: center;
+    font-size: 0.84rem;
+  }
+
+  .adminCategoryTabs {
+    margin-right: -12px;
+    margin-left: -12px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    padding: 8px 12px;
+  }
+
+  .adminCategoryChip {
+    padding: 8px 11px;
+    font-size: 0.84rem;
+  }
+
+  .adminSearchForm {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .adminSearchForm button,
+  .adminResetSearch {
+    width: 100%;
+    min-height: 44px;
   }
 
   .topBar {
@@ -3447,6 +3595,82 @@ textarea:focus-visible {
 @media (max-width: 520px) {
   .brandText strong {
     font-size: 0.96rem;
+  }
+
+  .adminPage {
+    padding: 8px;
+  }
+
+  .adminShell {
+    gap: 10px;
+  }
+
+  .adminHeader,
+  .adminListHeader,
+  .adminTabs,
+  .adminSearchForm,
+  .adminEmptyState {
+    border-radius: 8px;
+  }
+
+  .adminHeader {
+    grid-template-columns: 1fr;
+  }
+
+  .adminHeader > .brandLogo {
+    justify-self: start;
+  }
+
+  .adminHeader h1,
+  .adminListHeader h1 {
+    font-size: 1.18rem;
+  }
+
+  .adminHeader p,
+  .adminListHeader p {
+    font-size: 0.84rem;
+  }
+
+  .adminCountBadge {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+
+  .adminProductList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .adminProductRow {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .adminProductImage {
+    padding: 7px;
+  }
+
+  .adminProductMain h2 {
+    font-size: 0.86rem;
+  }
+
+  .adminProductMain p,
+  .adminProductMeta span,
+  .adminProductFlags span {
+    font-size: 0.76rem;
+  }
+
+  .adminProductMeta strong {
+    font-size: 0.92rem;
+  }
+
+  .adminProductFlags {
+    grid-template-columns: 1fr;
+    justify-content: start;
+  }
+
+  .adminStatus {
+    padding: 4px 7px;
   }
 
   .categoryChip {

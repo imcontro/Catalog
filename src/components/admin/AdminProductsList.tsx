@@ -1,12 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { AdminProductListItem, AdminProductListKind } from "@/server/admin/products";
+import type {
+  AdminProductCategory,
+  AdminProductListItem,
+  AdminProductListKind
+} from "@/server/admin/products";
 
 type AdminProductsListProps = {
   title: string;
   description: string;
   kind: AdminProductListKind;
   products: AdminProductListItem[];
+  categories?: AdminProductCategory[];
+  selectedCategoryId?: string;
   searchQuery?: string;
 };
 
@@ -22,22 +28,32 @@ export function AdminProductsList({
   description,
   kind,
   products,
+  categories = [],
+  selectedCategoryId = "",
   searchQuery = ""
 }: AdminProductsListProps) {
   const showSearch = kind === "products";
+  const showCategories = kind === "products" && categories.length > 0;
   const emptyTitle = searchQuery
     ? "По этому запросу ничего не найдено"
     : getEmptyTitle(kind);
+  const selectedCategory = categories.find((category) => category.id === selectedCategoryId);
+  const headerTitle = selectedCategory
+    ? `Категория: ${capitalizeDisplayName(selectedCategory.name)}`
+    : title;
+  const countLabel = selectedCategory
+    ? `${products.length} поз. в категории`
+    : `${products.length} поз.`;
 
   return (
     <section className="adminListSection" aria-labelledby="admin-products-title">
       <div className="adminListHeader">
         <div>
           <p className="sectionKicker">Управление каталогом</p>
-          <h1 id="admin-products-title">{title}</h1>
+          <h1 id="admin-products-title">{headerTitle}</h1>
           <p>{description}</p>
         </div>
-        <span className="adminCountBadge">{products.length} поз.</span>
+        <span className="adminCountBadge">{countLabel}</span>
       </div>
 
       <nav className="adminTabs" aria-label="Разделы товаров">
@@ -52,8 +68,39 @@ export function AdminProductsList({
         </Link>
       </nav>
 
+      {showCategories ? (
+        <nav className="adminCategoryTabs" aria-label="Категории товаров">
+          <Link
+            className={
+              selectedCategoryId
+                ? "adminCategoryChip"
+                : "adminCategoryChip adminCategoryChipActive"
+            }
+            href={buildProductsHref("", searchQuery)}
+          >
+            Все напитки
+          </Link>
+          {categories.map((category) => (
+            <Link
+              className={
+                selectedCategoryId === category.id
+                  ? "adminCategoryChip adminCategoryChipActive"
+                  : "adminCategoryChip"
+              }
+              href={buildProductsHref(category.id, searchQuery)}
+              key={category.id}
+            >
+              {capitalizeDisplayName(category.name)}
+            </Link>
+          ))}
+        </nav>
+      ) : null}
+
       {showSearch ? (
         <form action="/admin/products" className="adminSearchForm">
+          {selectedCategoryId ? (
+            <input name="category" type="hidden" value={selectedCategoryId} />
+          ) : null}
           <label>
             <span>Поиск товара</span>
             <input
@@ -66,7 +113,7 @@ export function AdminProductsList({
           </label>
           <button type="submit">Найти</button>
           {searchQuery ? (
-            <Link className="adminResetSearch" href="/admin/products">
+            <Link className="adminResetSearch" href={buildProductsHref(selectedCategoryId, "")}>
               Сбросить
             </Link>
           ) : null}
@@ -97,7 +144,7 @@ export function AdminProductsList({
               </div>
 
               <div className="adminProductMeta">
-                <span>{formatNullableRub(product.priceRub)}</span>
+                <strong>{formatNullableRub(product.priceRub)}</strong>
                 <span>{formatPackQuantity(product.packQuantity)}</span>
               </div>
 
@@ -134,7 +181,7 @@ function getEmptyTitle(kind: AdminProductListKind) {
 
 function getEmptyDescription(kind: AdminProductListKind, searchQuery: string) {
   if (searchQuery) {
-    return "Проверьте название или сбросьте поиск, чтобы увидеть весь список товаров.";
+    return "Проверьте название, смените категорию или сбросьте поиск, чтобы увидеть список товаров.";
   }
 
   if (kind === "drafts") {
@@ -154,6 +201,22 @@ function formatNullableRub(value: number | null) {
 
 function formatPackQuantity(value: number | null) {
   return value ? `${value} шт в уп` : "Упаковка не указана";
+}
+
+function buildProductsHref(categoryId: string, searchQuery: string) {
+  const params = new URLSearchParams();
+
+  if (categoryId) {
+    params.set("category", categoryId);
+  }
+
+  if (searchQuery) {
+    params.set("q", searchQuery);
+  }
+
+  const query = params.toString();
+
+  return query ? `/admin/products?${query}` : "/admin/products";
 }
 
 function capitalizeDisplayName(value: string) {
