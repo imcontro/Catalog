@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BrandLogo } from "@/components/BrandLogo";
 import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 import { requireAdminSession } from "@/server/admin/session";
@@ -21,13 +22,22 @@ export default async function AdminPage() {
           <AdminLogoutButton />
         </header>
 
-        <div className="adminStatePanel">
-          <h2>Раздел защищен</h2>
-          <p>
-            Эта страница открывается только при действующей админской сессии.
-            Следующий work plan сможет добавить сюда управление товарами,
-            категориями, вкусами, фото и сортировкой.
-          </p>
+        <div className="adminSectionGrid">
+          <Link className="adminSectionCard" href="/admin/products">
+            <span>Товары</span>
+            <strong>Активные и нет в наличии</strong>
+            <p>Обычный список товаров, которые видны владельцу для контроля каталога.</p>
+          </Link>
+          <Link className="adminSectionCard" href="/admin/drafts">
+            <span>Черновики</span>
+            <strong>Незаполненные товары</strong>
+            <p>Товары, которым не хватает данных для клиентского каталога.</p>
+          </Link>
+          <Link className="adminSectionCard" href="/admin/hidden">
+            <span>Скрытые</span>
+            <strong>Убраны от клиентов</strong>
+            <p>Товары, которые сохранены в базе, но не показываются в каталоге.</p>
+          </Link>
         </div>
       </section>
     </main>
