@@ -4,25 +4,20 @@ import {
   ADMIN_SESSION_COOKIE_NAME,
   validateAdminSessionToken
 } from "@/server/admin/session";
-import {
-  AdminProductMutationError,
-  deleteAdminProduct,
-  updateAdminProduct
-} from "@/server/admin/products";
-import { parseAdminProductPayload } from "@/server/admin/product-payload";
+import { AdminProductMutationError, hideAdminProduct } from "@/server/admin/products";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-type AdminProductRouteContext = {
+type AdminProductActionRouteContext = {
   params: Promise<{
     id: string;
   }>;
 };
 
-export async function PATCH(
+export async function POST(
   request: NextRequest,
-  { params }: AdminProductRouteContext
+  { params }: AdminProductActionRouteContext
 ) {
   const session = await getApiAdminSession(request);
 
@@ -32,38 +27,14 @@ export async function PATCH(
 
   try {
     const { id } = await params;
-    const body = await request.json();
-    const result = await updateAdminProduct(id, parseAdminProductPayload(body));
+    const result = await hideAdminProduct(id);
 
     return NextResponse.json({
       ok: true,
       ...result
     });
   } catch (error) {
-    return productMutationErrorResponse(error);
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: AdminProductRouteContext
-) {
-  const session = await getApiAdminSession(request);
-
-  if (!session) {
-    return unauthorizedResponse();
-  }
-
-  try {
-    const { id } = await params;
-    const result = await deleteAdminProduct(id);
-
-    return NextResponse.json({
-      ok: true,
-      ...result
-    });
-  } catch (error) {
-    return productMutationErrorResponse(error);
+    return productActionErrorResponse(error);
   }
 }
 
@@ -73,7 +44,7 @@ async function getApiAdminSession(request: NextRequest) {
   return token ? validateAdminSessionToken(token) : null;
 }
 
-function productMutationErrorResponse(error: unknown) {
+function productActionErrorResponse(error: unknown) {
   if (error instanceof AdminProductMutationError) {
     return NextResponse.json(
       {
@@ -87,7 +58,7 @@ function productMutationErrorResponse(error: unknown) {
 
   return NextResponse.json(
     {
-      message: "Не удалось выполнить действие с товаром. Попробуйте еще раз."
+      message: "Не удалось скрыть товар. Попробуйте еще раз."
     },
     {
       status: 500
