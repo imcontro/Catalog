@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AdminProductQuickActions } from "./AdminProductQuickActions";
 import type {
   AdminProductCategory,
   AdminProductListItem,
@@ -130,10 +131,8 @@ export function AdminProductsList({
       {products.length > 0 ? (
         <div className="adminProductList">
           {products.map((product) => (
-            <Link
-              aria-label={`Редактировать ${product.name}`}
+            <article
               className="adminProductRow"
-              href={`/admin/products/${product.id}/edit`}
               key={product.id}
             >
               <div className="adminProductImageFrame">
@@ -167,10 +166,19 @@ export function AdminProductsList({
                 <span>{product.hasFlavorChoice ? "Есть вкусы" : "Без вкусов"}</span>
               </div>
 
-              <span className="adminProductEditLink" aria-hidden="true">
+              <Link
+                className="adminProductEditLink"
+                href={`/admin/products/${product.id}/edit`}
+              >
                 Редактировать
-              </span>
-            </Link>
+              </Link>
+
+              <AdminProductQuickActions
+                kind={kind}
+                productId={product.id}
+                productName={capitalizeDisplayName(product.name)}
+              />
+            </article>
           ))}
         </div>
       ) : (

@@ -280,6 +280,117 @@ export async function updateAdminProduct(id: string, input: AdminProductMutation
   }
 }
 
+export async function hideAdminProduct(id: string) {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const [updatedProduct] = await db
+      .update(products)
+      .set({
+        status: "hidden",
+        updatedAt: new Date()
+      })
+      .where(and(eq(products.id, id), isNull(products.deletedAt)))
+      .returning({
+        id: products.id
+      });
+
+    if (!updatedProduct) {
+      throw new AdminProductMutationError("Товар не найден или удален.", 404);
+    }
+
+    return {
+      id,
+      redirectTo: "/admin/hidden"
+    };
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function restoreHiddenAdminProduct(id: string) {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const [currentProduct] = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        categoryId: products.categoryId,
+        priceRub: products.priceRub,
+        packQuantity: products.packQuantity,
+        mainImageId: products.mainImageId,
+        status: products.status
+      })
+      .from(products)
+      .where(and(eq(products.id, id), isNull(products.deletedAt)))
+      .limit(1);
+
+    if (!currentProduct) {
+      throw new AdminProductMutationError("Товар не найден или удален.", 404);
+    }
+
+    if (currentProduct.status !== "hidden") {
+      throw new AdminProductMutationError("Товар уже не находится в скрытых.", 409);
+    }
+
+    validatePublicationData(
+      {
+        name: currentProduct.name,
+        categoryId: currentProduct.categoryId,
+        priceRub: currentProduct.priceRub,
+        packQuantity: currentProduct.packQuantity,
+        mainImageId: currentProduct.mainImageId,
+        status: "active"
+      },
+      currentProduct.mainImageId
+    );
+
+    await db
+      .update(products)
+      .set({
+        status: "active",
+        updatedAt: new Date()
+      })
+      .where(eq(products.id, id));
+
+    return {
+      id,
+      redirectTo: "/admin/products"
+    };
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function deleteAdminProduct(id: string) {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const [updatedProduct] = await db
+      .update(products)
+      .set({
+        deletedAt: new Date(),
+        updatedAt: new Date()
+      })
+      .where(and(eq(products.id, id), isNull(products.deletedAt)))
+      .returning({
+        id: products.id
+      });
+
+    if (!updatedProduct) {
+      throw new AdminProductMutationError("Товар не найден или уже удален.", 404);
+    }
+
+    return {
+      id,
+      redirectTo: "/admin/products"
+    };
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
 export function normalizeAdminProductSearch(value: string | string[] | undefined) {
   const rawValue = Array.isArray(value) ? value[0] : value;
 

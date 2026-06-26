@@ -6,6 +6,37 @@
 
 ## Записи
 
+### 2026-06-26 - Админка: быстрые действия и удаление товара
+
+- Work plan: `docs/work-plans/completed/2026-06-26-admin-product-quick-actions-delete.work-plan.md`
+- Ветка: `feature/admin-product-quick-actions-delete`
+- Pull Request:
+- Области: admin, frontend
+
+Сделано:
+
+- На карточках товаров в `/admin/products` добавлено быстрое действие **Скрыть** с подтверждением.
+- На карточках товаров в `/admin/hidden` добавлено действие **Вернуть в каталог**.
+- Возврат скрытого товара публикует его в статус `active` только при наличии обязательных данных.
+- На карточках товаров в `/admin/products`, `/admin/drafts` и `/admin/hidden` добавлено действие **Удалить** с подтверждением.
+- Добавлен защищенный `DELETE /api/admin/products/{id}` с мягким удалением через `products.deleted_at`.
+- Добавлены защищенные API `POST /api/admin/products/{id}/hide` и `POST /api/admin/products/{id}/restore`.
+- Удаленные товары исчезают из списков админки и не попадают в клиентский каталог.
+- Фото товара не удаляются из Supabase Storage при удалении товара.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Управление вкусами, категориями, сортировкой, фото вкусов и восстановление удаленного товара не входили в этот work plan.
+- Временные логи `.codex_tmp/` не входят в commit.
+
 ### 2026-06-26 - Админка: загрузка и замена основного фото товара
 
 - Work plan: `docs/work-plans/completed/2026-06-26-admin-product-main-image.work-plan.md`
