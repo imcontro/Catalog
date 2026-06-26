@@ -1,8 +1,9 @@
-import { and, asc, eq, ilike, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, ilike, inArray, isNull, ne, sql } from "drizzle-orm";
 import { createDatabaseConnection } from "../db/client";
 import { categories, images, products } from "../db/schema";
 
 export type AdminProductListKind = "products" | "drafts" | "hidden";
+export type AdminProductStatus = "active" | "out_of_stock" | "hidden" | "draft";
 
 export type AdminProductCategory = {
   id: string;
@@ -18,13 +19,35 @@ export type AdminProductListItem = {
   priceRub: number | null;
   packQuantity: number | null;
   imageUrl: string | null;
-  status: "active" | "out_of_stock" | "hidden" | "draft";
+  status: AdminProductStatus;
   hasFlavorChoice: boolean;
   allDrinksSortOrder: number;
   categorySortOrder: number;
 };
 
+export type AdminProductEditItem = AdminProductListItem & {
+  mainImageId: string | null;
+};
+
+export type AdminProductMutationInput = {
+  name: string;
+  categoryId: string | null;
+  priceRub: number | null;
+  packQuantity: number | null;
+  status: AdminProductStatus;
+};
+
+export class AdminProductMutationError extends Error {
+  constructor(
+    message: string,
+    public readonly status = 400
+  ) {
+    super(message);
+  }
+}
+
 const MAX_SEARCH_LENGTH = 120;
+const ADMIN_PRODUCT_STATUSES = ["active", "out_of_stock", "hidden", "draft"] as const;
 
 export async function getAdminProductsList({
   kind,
@@ -75,6 +98,39 @@ export async function getAdminProductsList({
   }
 }
 
+export async function getAdminProductForEdit(
+  id: string
+): Promise<AdminProductEditItem | null> {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const [row] = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        categoryId: products.categoryId,
+        categoryName: categories.name,
+        priceRub: products.priceRub,
+        packQuantity: products.packQuantity,
+        mainImageId: products.mainImageId,
+        imageUrl: images.publicUrl,
+        status: products.status,
+        hasFlavorChoice: products.hasFlavorChoice,
+        allDrinksSortOrder: products.allDrinksSortOrder,
+        categorySortOrder: products.categorySortOrder
+      })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .leftJoin(images, eq(products.mainImageId, images.id))
+      .where(and(eq(products.id, id), isNull(products.deletedAt)))
+      .limit(1);
+
+    return row ?? null;
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
 export async function getAdminProductCategories(): Promise<AdminProductCategory[]> {
   const { db, queryClient } = createDatabaseConnection();
 
@@ -89,6 +145,131 @@ export async function getAdminProductCategories(): Promise<AdminProductCategory[
       .orderBy(asc(categories.sortOrder), asc(categories.name));
 
     return rows;
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function createAdminProduct(input: AdminProductMutationInput) {
+  const normalizedInput = normalizeMutationInput(input);
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    return await db.transaction(async (tx) => {
+      await validateCategory(tx, normalizedInput.categoryId);
+      validatePublicationData(normalizedInput, null);
+
+      const allDrinksSortOrder = await getNextAllDrinksSortOrder(tx);
+      const categorySortOrder = normalizedInput.categoryId
+        ? await getNextCategorySortOrder(tx, normalizedInput.categoryId)
+        : 0;
+      const [createdProduct] = await tx
+        .insert(products)
+        .values({
+          name: normalizedInput.name,
+          categoryId: normalizedInput.categoryId,
+          priceRub: normalizedInput.priceRub,
+          packQuantity: normalizedInput.packQuantity,
+          status: normalizedInput.status,
+          hasFlavorChoice: false,
+          allDrinksSortOrder,
+          categorySortOrder
+        })
+        .returning({
+          id: products.id,
+          status: products.status
+        });
+
+      if (!createdProduct) {
+        throw new AdminProductMutationError("Не удалось сохранить товар.", 500);
+      }
+
+      return {
+        id: createdProduct.id,
+        redirectTo: `/admin/products/${createdProduct.id}/edit`
+      };
+    });
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function updateAdminProduct(id: string, input: AdminProductMutationInput) {
+  const normalizedInput = normalizeMutationInput(input);
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    return await db.transaction(async (tx) => {
+      const [currentProduct] = await tx
+        .select({
+          id: products.id,
+          categoryId: products.categoryId,
+          mainImageId: products.mainImageId
+        })
+        .from(products)
+        .where(and(eq(products.id, id), isNull(products.deletedAt)))
+        .limit(1);
+
+      if (!currentProduct) {
+        throw new AdminProductMutationError("Товар не найден или удален.", 404);
+      }
+
+      await validateCategory(tx, normalizedInput.categoryId);
+      validatePublicationData(normalizedInput, currentProduct.mainImageId);
+
+      const categoryChanged = currentProduct.categoryId !== normalizedInput.categoryId;
+      const nextCategorySortOrder = categoryChanged
+        ? normalizedInput.categoryId
+          ? await getNextCategorySortOrder(tx, normalizedInput.categoryId)
+          : 0
+        : undefined;
+
+      await tx
+        .update(products)
+        .set({
+          name: normalizedInput.name,
+          categoryId: normalizedInput.categoryId,
+          priceRub: normalizedInput.priceRub,
+          packQuantity: normalizedInput.packQuantity,
+          status: normalizedInput.status,
+          categorySortOrder: nextCategorySortOrder,
+          updatedAt: new Date()
+        })
+        .where(eq(products.id, id));
+
+      if (categoryChanged && currentProduct.categoryId) {
+        const oldCategoryProducts = await tx
+          .select({
+            id: products.id
+          })
+          .from(products)
+          .where(
+            and(
+              isNull(products.deletedAt),
+              eq(products.categoryId, currentProduct.categoryId),
+              ne(products.id, id)
+            )
+          )
+          .orderBy(asc(products.categorySortOrder), asc(products.name));
+
+        await Promise.all(
+          oldCategoryProducts.map((product, index) =>
+            tx
+              .update(products)
+              .set({
+                categorySortOrder: index,
+                updatedAt: new Date()
+              })
+              .where(eq(products.id, product.id))
+          )
+        );
+      }
+
+      return {
+        id,
+        redirectTo: getAdminProductsHrefByStatus(normalizedInput.status)
+      };
+    });
   } finally {
     await queryClient.end({ timeout: 5 });
   }
@@ -113,6 +294,22 @@ export function normalizeAdminProductCategory(
   return availableCategories.some((category) => category.id === rawValue) ? rawValue : "";
 }
 
+export function isAdminProductStatus(value: unknown): value is AdminProductStatus {
+  return ADMIN_PRODUCT_STATUSES.some((status) => status === value);
+}
+
+export function getAdminProductsHrefByStatus(status: AdminProductStatus) {
+  if (status === "draft") {
+    return "/admin/drafts";
+  }
+
+  if (status === "hidden") {
+    return "/admin/hidden";
+  }
+
+  return "/admin/products";
+}
+
 function getStatusFilter(kind: AdminProductListKind) {
   if (kind === "drafts") {
     return eq(products.status, "draft");
@@ -131,4 +328,99 @@ function normalizeSearch(value: string | undefined) {
   }
 
   return value.trim().slice(0, MAX_SEARCH_LENGTH);
+}
+
+function normalizeMutationInput(input: AdminProductMutationInput) {
+  const name = input.name.trim();
+
+  if (!name) {
+    throw new AdminProductMutationError("Введите название товара.");
+  }
+
+  return {
+    name,
+    categoryId: input.categoryId,
+    priceRub: input.priceRub,
+    packQuantity: input.packQuantity,
+    status: input.status
+  };
+}
+
+async function validateCategory(
+  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0],
+  categoryId: string | null
+) {
+  if (!categoryId) {
+    return;
+  }
+
+  const [category] = await db
+    .select({
+      id: categories.id
+    })
+    .from(categories)
+    .where(eq(categories.id, categoryId))
+    .limit(1);
+
+  if (!category) {
+    throw new AdminProductMutationError("Выбранная категория не найдена.");
+  }
+}
+
+function validatePublicationData(
+  input: AdminProductMutationInput,
+  mainImageId: string | null
+) {
+  if (input.status !== "active" && input.status !== "out_of_stock") {
+    return;
+  }
+
+  if (!input.categoryId) {
+    throw new AdminProductMutationError(
+      "Чтобы опубликовать товар, выберите категорию."
+    );
+  }
+
+  if (input.priceRub === null) {
+    throw new AdminProductMutationError("Чтобы опубликовать товар, укажите цену.");
+  }
+
+  if (input.packQuantity === null) {
+    throw new AdminProductMutationError(
+      "Чтобы опубликовать товар, укажите количество штук в одной уп."
+    );
+  }
+
+  if (!mainImageId) {
+    throw new AdminProductMutationError(
+      "Чтобы опубликовать товар, нужно добавить основное фото."
+    );
+  }
+}
+
+async function getNextAllDrinksSortOrder(
+  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0]
+) {
+  const [row] = await db
+    .select({
+      value: sql<number>`coalesce(max(${products.allDrinksSortOrder}), -1)`
+    })
+    .from(products)
+    .where(isNull(products.deletedAt));
+
+  return Number(row?.value ?? -1) + 1;
+}
+
+async function getNextCategorySortOrder(
+  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0],
+  categoryId: string
+) {
+  const [row] = await db
+    .select({
+      value: sql<number>`coalesce(max(${products.categorySortOrder}), -1)`
+    })
+    .from(products)
+    .where(and(isNull(products.deletedAt), eq(products.categoryId, categoryId)));
+
+  return Number(row?.value ?? -1) + 1;
 }

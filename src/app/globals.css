@@ -3088,6 +3088,14 @@ textarea:focus-visible {
   line-height: 1.5;
 }
 
+.adminListActions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-end;
+}
+
 .adminCountBadge {
   flex: 0 0 auto;
   border-radius: 999px;
@@ -3095,6 +3103,25 @@ textarea:focus-visible {
   background: var(--charcoal);
   color: #fffaf4;
   font-weight: 900;
+}
+
+.adminPrimaryAction,
+.adminProductEditLink,
+.adminFormBackLink,
+.adminProductFormActions a {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  padding: 0 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.adminPrimaryAction {
+  background: var(--accent);
+  color: #fffaf4;
 }
 
 .adminTabs {
@@ -3215,6 +3242,13 @@ textarea:focus-visible {
   padding: 10px;
   background: var(--surface);
   box-shadow: 0 10px 22px rgba(24, 21, 19, 0.05);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.adminProductRow:hover {
+  border-color: rgba(19, 127, 117, 0.32);
+  box-shadow: 0 12px 24px rgba(24, 21, 19, 0.08);
 }
 
 .adminProductImageFrame {
@@ -3307,6 +3341,16 @@ textarea:focus-visible {
   color: var(--muted);
 }
 
+.adminProductEditLink {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid rgba(19, 127, 117, 0.28);
+  background: var(--teal);
+  color: #fffaf4;
+  font-size: 0.88rem;
+  box-shadow: 0 8px 14px rgba(19, 127, 117, 0.16);
+}
+
 .adminEmptyState {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -3324,6 +3368,158 @@ textarea:focus-visible {
   margin: 8px 0 0;
   color: var(--muted);
   line-height: 1.5;
+}
+
+.adminFormSection,
+.adminProductForm {
+  display: grid;
+  gap: 14px;
+}
+
+.adminFormHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 22px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.adminFormHeader h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.7rem;
+  line-height: 1.1;
+}
+
+.adminFormHeader p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.adminFormBackLink,
+.adminProductFormActions a {
+  border: 1px solid var(--line);
+  background: #f8faf9;
+  color: var(--ink);
+}
+
+.adminProductForm {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--surface);
+  box-shadow: 0 10px 22px rgba(24, 21, 19, 0.05);
+}
+
+.adminProductFormGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 18px;
+  align-items: start;
+}
+
+.adminProductFormFields {
+  display: grid;
+  gap: 14px;
+}
+
+.adminProductForm label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.adminProductForm label span,
+.adminProductPhotoPanel > span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.adminProductForm input,
+.adminProductForm select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  background: #f8faf9;
+  color: var(--ink);
+}
+
+.adminProductFormPair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adminProductPhotoPanel {
+  display: grid;
+  gap: 7px;
+}
+
+.adminProductPhotoFrame {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f3f2 100%);
+  color: var(--muted);
+  text-align: center;
+}
+
+.adminProductPhotoFrame strong {
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+.adminProductPhoto {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 14px;
+}
+
+.adminFormError {
+  border: 1px solid #ffd0d0;
+  border-radius: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  background: #fff0f0;
+  color: #9b1c1c;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.adminProductFormActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.adminProductFormActions button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 18px;
+  background: var(--accent);
+  color: #fffaf4;
+  font-weight: 900;
+}
+
+.adminProductFormActions :disabled {
+  opacity: 0.72;
 }
 
 @media (max-width: 800px) {
@@ -3347,8 +3543,10 @@ textarea:focus-visible {
   }
 
   .adminHeader .adminLogoutButton {
-    grid-column: 1 / -1;
-    width: 100%;
+    grid-column: 2;
+    width: fit-content;
+    min-height: 36px;
+    padding: 0 12px;
   }
 
   .adminHeader h1 {
@@ -3366,7 +3564,16 @@ textarea:focus-visible {
 
   .adminSectionCard {
     min-height: auto;
-    padding: 14px;
+    gap: 5px;
+    padding: 12px;
+  }
+
+  .adminSectionCard p {
+    display: none;
+  }
+
+  .adminSectionCard strong {
+    font-size: 0.98rem;
   }
 
   .adminListHeader {
@@ -3386,6 +3593,40 @@ textarea:focus-visible {
 
   .adminCountBadge {
     width: fit-content;
+  }
+
+  .adminListActions {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .adminPrimaryAction {
+    min-width: 148px;
+  }
+
+  .adminFormHeader {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+  }
+
+  .adminFormHeader h1 {
+    font-size: 1.35rem;
+  }
+
+  .adminProductForm {
+    padding: 12px;
+  }
+
+  .adminProductFormGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .adminProductPhotoPanel {
+    max-width: 260px;
   }
 
   .adminTabs {
@@ -3607,6 +3848,8 @@ textarea:focus-visible {
 
   .adminHeader,
   .adminListHeader,
+  .adminFormHeader,
+  .adminProductForm,
   .adminTabs,
   .adminSearchForm,
   .adminEmptyState {
@@ -3614,21 +3857,50 @@ textarea:focus-visible {
   }
 
   .adminHeader {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 10px;
+    padding: 10px;
+  }
+
+  .adminHeader .adminLogoutButton {
+    grid-column: 2;
+    grid-row: 1;
   }
 
   .adminHeader > .brandLogo {
     justify-self: start;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .adminHeader > div {
+    grid-column: 1 / -1;
   }
 
   .adminHeader h1,
-  .adminListHeader h1 {
+  .adminListHeader h1,
+  .adminFormHeader h1 {
     font-size: 1.18rem;
   }
 
   .adminHeader p,
-  .adminListHeader p {
+  .adminListHeader p,
+  .adminFormHeader p {
     font-size: 0.84rem;
+  }
+
+  .adminHeader p,
+  .adminListHeader p {
+    display: none;
+  }
+
+  .adminListHeader {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .adminListActions {
+    gap: 8px;
   }
 
   .adminCountBadge {
@@ -3636,22 +3908,62 @@ textarea:focus-visible {
     font-size: 0.82rem;
   }
 
+  .adminPrimaryAction {
+    min-width: 0;
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 0.84rem;
+  }
+
+  .adminTabs {
+    gap: 4px;
+    padding: 4px;
+  }
+
+  .adminTabs a {
+    padding: 8px 4px;
+  }
+
+  .adminCategoryTabs {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .adminSearchForm label span {
+    display: none;
+  }
+
+  .adminSearchForm input,
+  .adminSearchForm button,
+  .adminResetSearch {
+    min-height: 40px;
+  }
+
   .adminProductList {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 8px;
   }
 
   .adminProductRow {
-    gap: 8px;
+    grid-template-columns: 72px minmax(0, 1fr);
+    grid-template-rows: auto auto auto auto;
+    gap: 6px 10px;
+    align-items: start;
     padding: 8px;
   }
 
+  .adminProductImageFrame {
+    grid-row: 1 / 4;
+    width: 72px;
+    aspect-ratio: 1 / 1;
+  }
+
   .adminProductImage {
-    padding: 7px;
+    padding: 5px;
   }
 
   .adminProductMain h2 {
-    font-size: 0.86rem;
+    font-size: 0.92rem;
   }
 
   .adminProductMain p,
@@ -3664,13 +3976,32 @@ textarea:focus-visible {
     font-size: 0.92rem;
   }
 
+  .adminProductMeta {
+    border-top: 0;
+    padding-top: 0;
+  }
+
   .adminProductFlags {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, minmax(0, max-content));
     justify-content: start;
+  }
+
+  .adminProductEditLink {
+    grid-column: 1 / -1;
+    min-height: 40px;
   }
 
   .adminStatus {
     padding: 4px 7px;
+  }
+
+  .adminProductFormPair {
+    grid-template-columns: 1fr;
+  }
+
+  .adminProductFormActions {
+    display: grid;
+    grid-template-columns: 1fr;
   }
 
   .categoryChip {

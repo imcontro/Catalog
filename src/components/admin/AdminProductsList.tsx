@@ -53,7 +53,14 @@ export function AdminProductsList({
           <h1 id="admin-products-title">{headerTitle}</h1>
           <p>{description}</p>
         </div>
-        <span className="adminCountBadge">{countLabel}</span>
+        <div className="adminListActions">
+          <span className="adminCountBadge">{countLabel}</span>
+          {kind === "products" ? (
+            <Link className="adminPrimaryAction" href="/admin/products/new">
+              Добавить товар
+            </Link>
+          ) : null}
+        </div>
       </div>
 
       <nav className="adminTabs" aria-label="Разделы товаров">
@@ -123,7 +130,12 @@ export function AdminProductsList({
       {products.length > 0 ? (
         <div className="adminProductList">
           {products.map((product) => (
-            <article className="adminProductRow" key={product.id}>
+            <Link
+              aria-label={`Редактировать ${product.name}`}
+              className="adminProductRow"
+              href={`/admin/products/${product.id}/edit`}
+              key={product.id}
+            >
               <div className="adminProductImageFrame">
                 {product.imageUrl ? (
                   <Image
@@ -154,7 +166,11 @@ export function AdminProductsList({
                 </span>
                 <span>{product.hasFlavorChoice ? "Есть вкусы" : "Без вкусов"}</span>
               </div>
-            </article>
+
+              <span className="adminProductEditLink" aria-hidden="true">
+                Редактировать
+              </span>
+            </Link>
           ))}
         </div>
       ) : (

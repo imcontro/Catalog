@@ -17,7 +17,7 @@ export default async function AdminPage() {
           <div>
             <p className="sectionKicker">Админка</p>
             <h1 id="admin-title">Управление каталогом</h1>
-            <p>Вход выполнен. Управление товарами будет подключено отдельным этапом.</p>
+            <p>Выберите раздел для работы с товарами каталога.</p>
           </div>
           <AdminLogoutButton />
         </header>
