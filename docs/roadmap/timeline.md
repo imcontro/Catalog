@@ -6,6 +6,36 @@
 
 ## Записи
 
+### 2026-06-26 - Админка: добавление и редактирование базовых данных товаров
+
+- Work plan: `docs/work-plans/completed/2026-06-25-admin-product-basic-editing.work-plan.md`
+- Ветка: `feature/admin-product-basic-editing`
+- Pull Request:
+- Области: admin, frontend
+
+Сделано:
+
+- Добавлены защищенные страницы `/admin/products/new` и `/admin/products/[id]/edit`.
+- В админке появился первый сценарий создания товара как черновика.
+- Добавлено редактирование базовых данных товара: название, категория, цена, количество штук в одной уп и статус.
+- Добавлены защищенные API `POST /api/admin/products` и `PATCH /api/admin/products/{id}`.
+- Серверная проверка не публикует товар со статусом `active` или `out_of_stock`, если не заполнены обязательные данные для клиентского каталога.
+- При смене категории товар переносится в конец новой категории, а старая категория смыкается без пустого места.
+- На карточках товаров в `/admin/products`, `/admin/drafts` и `/admin/hidden` добавлено действие **Редактировать**.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Загрузка и замена фото, управление вкусами, удаление товаров, управление категориями и drag-and-drop сортировка не входили в этот work plan.
+- Временные логи `.codex_tmp/` не входят в commit.
+
 ### 2026-06-25 - Админка: карточки товаров по категориям
 
 - Work plan: `docs/work-plans/completed/2026-06-25-admin-category-card-overview.work-plan.md`
