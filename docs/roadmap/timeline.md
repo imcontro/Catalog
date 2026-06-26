@@ -6,6 +6,37 @@
 
 ## Записи
 
+### 2026-06-26 - Админка: загрузка и замена основного фото товара
+
+- Work plan: `docs/work-plans/completed/2026-06-26-admin-product-main-image.work-plan.md`
+- Ветка: `feature/admin-product-main-image`
+- Pull Request:
+- Области: admin, frontend
+
+Сделано:
+
+- Добавлен защищенный API `POST /api/admin/images` для загрузки фото после входа в админку.
+- Фото проверяется по формату JPG, PNG или WebP и лимиту до 5 МБ.
+- Файл сохраняется в Supabase Storage bucket `product-images`, а данные фото записываются в таблицу `images`.
+- Форма создания и редактирования товара позволяет загрузить или заменить основное фото.
+- При сохранении товара форма передает `mainImageId`, а сервер записывает его в `products.main_image_id`.
+- Правило обязательного основного фото для публикации товара сохранено.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Временная HTTP-проверка `/admin/login`: `HTTP 200`
+- Ручная проверка владельцем.
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Фото вкусов, управление вкусами, удаление старых фото и очистка неиспользуемых фото не входили в этот work plan.
+- Временные логи `.codex_tmp/` не входят в commit.
+
 ### 2026-06-26 - Админка: добавление и редактирование базовых данных товаров
 
 - Work plan: `docs/work-plans/completed/2026-06-25-admin-product-basic-editing.work-plan.md`

@@ -34,6 +34,7 @@ export type AdminProductMutationInput = {
   categoryId: string | null;
   priceRub: number | null;
   packQuantity: number | null;
+  mainImageId: string | null;
   status: AdminProductStatus;
 };
 
@@ -157,7 +158,8 @@ export async function createAdminProduct(input: AdminProductMutationInput) {
   try {
     return await db.transaction(async (tx) => {
       await validateCategory(tx, normalizedInput.categoryId);
-      validatePublicationData(normalizedInput, null);
+      await validateMainImage(tx, normalizedInput.mainImageId);
+      validatePublicationData(normalizedInput, normalizedInput.mainImageId);
 
       const allDrinksSortOrder = await getNextAllDrinksSortOrder(tx);
       const categorySortOrder = normalizedInput.categoryId
@@ -170,6 +172,7 @@ export async function createAdminProduct(input: AdminProductMutationInput) {
           categoryId: normalizedInput.categoryId,
           priceRub: normalizedInput.priceRub,
           packQuantity: normalizedInput.packQuantity,
+          mainImageId: normalizedInput.mainImageId,
           status: normalizedInput.status,
           hasFlavorChoice: false,
           allDrinksSortOrder,
@@ -215,7 +218,8 @@ export async function updateAdminProduct(id: string, input: AdminProductMutation
       }
 
       await validateCategory(tx, normalizedInput.categoryId);
-      validatePublicationData(normalizedInput, currentProduct.mainImageId);
+      await validateMainImage(tx, normalizedInput.mainImageId);
+      validatePublicationData(normalizedInput, normalizedInput.mainImageId);
 
       const categoryChanged = currentProduct.categoryId !== normalizedInput.categoryId;
       const nextCategorySortOrder = categoryChanged
@@ -231,6 +235,7 @@ export async function updateAdminProduct(id: string, input: AdminProductMutation
           categoryId: normalizedInput.categoryId,
           priceRub: normalizedInput.priceRub,
           packQuantity: normalizedInput.packQuantity,
+          mainImageId: normalizedInput.mainImageId,
           status: normalizedInput.status,
           categorySortOrder: nextCategorySortOrder,
           updatedAt: new Date()
@@ -342,6 +347,7 @@ function normalizeMutationInput(input: AdminProductMutationInput) {
     categoryId: input.categoryId,
     priceRub: input.priceRub,
     packQuantity: input.packQuantity,
+    mainImageId: input.mainImageId,
     status: input.status
   };
 }
@@ -364,6 +370,27 @@ async function validateCategory(
 
   if (!category) {
     throw new AdminProductMutationError("Выбранная категория не найдена.");
+  }
+}
+
+async function validateMainImage(
+  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0],
+  mainImageId: string | null
+) {
+  if (!mainImageId) {
+    return;
+  }
+
+  const [image] = await db
+    .select({
+      id: images.id
+    })
+    .from(images)
+    .where(eq(images.id, mainImageId))
+    .limit(1);
+
+  if (!image) {
+    throw new AdminProductMutationError("Выбранное фото не найдено.");
   }
 }
 
