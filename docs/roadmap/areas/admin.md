@@ -4,6 +4,34 @@
 
 ## Записи
 
+### 2026-06-26 - Админка: загрузка и замена основного фото товара
+
+- Work plan: `docs/work-plans/completed/2026-06-26-admin-product-main-image.work-plan.md`
+- Ветка: `feature/admin-product-main-image`
+- Pull Request:
+
+Сделано:
+
+- Добавлен защищенный API загрузки основного фото товара.
+- Фото загружается только после проверки админской сессии.
+- Разрешены JPG, PNG и WebP до 5 МБ.
+- Загруженное фото сохраняется в Supabase Storage bucket `product-images`.
+- В таблице `images` создается запись о загруженном фото.
+- При сохранении товара сервер записывает выбранное фото в `products.main_image_id`.
+- Сервер продолжает запрещать публикацию товара без основного фото.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Ручная проверка владельцем.
+
+Заметки:
+
+- Фото вкусов, очистка старых файлов и управление вкусами остаются отдельными work plans.
+
 ### 2026-06-26 - Админка: добавление и редактирование базовых данных товаров
 
 - Work plan: `docs/work-plans/completed/2026-06-25-admin-product-basic-editing.work-plan.md`

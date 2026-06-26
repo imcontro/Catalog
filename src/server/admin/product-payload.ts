@@ -19,6 +19,10 @@ export function parseAdminProductPayload(value: unknown): AdminProductMutationIn
     value.packQuantity,
     "количество штук в одной уп"
   );
+  const mainImageId =
+    typeof value.mainImageId === "string" && value.mainImageId.trim()
+      ? value.mainImageId.trim()
+      : null;
 
   if (!isAdminProductStatus(value.status)) {
     throw new AdminProductMutationError("Выберите корректный статус товара.");
@@ -29,6 +33,7 @@ export function parseAdminProductPayload(value: unknown): AdminProductMutationIn
     categoryId,
     priceRub,
     packQuantity,
+    mainImageId,
     status: value.status
   };
 }

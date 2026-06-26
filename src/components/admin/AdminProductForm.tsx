@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import type { ChangeEvent, FormEvent } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -34,8 +35,13 @@ export function AdminProductForm({ mode, categories, product }: AdminProductForm
   const [packQuantity, setPackQuantity] = useState(
     formatInputNumber(product?.packQuantity ?? null)
   );
+  const [mainImageId, setMainImageId] = useState(product?.mainImageId ?? "");
+  const [imageUrl, setImageUrl] = useState(product?.imageUrl ?? "");
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [status, setStatus] = useState<AdminProductStatus>(product?.status ?? "draft");
   const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isEditMode = mode === "edit";
   const title = isEditMode ? "Редактирование товара" : "Новый товар";
@@ -66,6 +72,7 @@ export function AdminProductForm({ mode, categories, product }: AdminProductForm
             categoryId,
             priceRub,
             packQuantity,
+            mainImageId,
             status
           })
         }
@@ -92,6 +99,60 @@ export function AdminProductForm({ mode, categories, product }: AdminProductForm
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  async function handleImageUpload() {
+    if (!selectedImageFile) {
+      setImageError("Выберите файл фото.");
+      return;
+    }
+
+    setImageError(null);
+    setIsUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", selectedImageFile);
+
+      const response = await fetch("/api/admin/images", {
+        method: "POST",
+        body: formData
+      });
+
+      if (!response.ok) {
+        const message = await getResponseMessage(response);
+        setImageError(message);
+
+        if (response.status === 401) {
+          router.replace("/admin/login");
+        }
+
+        return;
+      }
+
+      const body = (await response.json()) as {
+        imageId?: unknown;
+        imageUrl?: unknown;
+      };
+
+      if (typeof body.imageId !== "string" || typeof body.imageUrl !== "string") {
+        setImageError("Не удалось получить данные загруженного фото.");
+        return;
+      }
+
+      setMainImageId(body.imageId);
+      setImageUrl(body.imageUrl);
+      setSelectedImageFile(null);
+    } catch {
+      setImageError("Не удалось загрузить фото. Проверьте соединение и попробуйте еще раз.");
+    } finally {
+      setIsUploadingImage(false);
+    }
+  }
+
+  function handleImageFileChange(event: ChangeEvent<HTMLInputElement>) {
+    setSelectedImageFile(event.target.files?.[0] ?? null);
+    setImageError(null);
   }
 
   return (
@@ -181,25 +242,48 @@ export function AdminProductForm({ mode, categories, product }: AdminProductForm
           <aside className="adminProductPhotoPanel">
             <span>Основное фото</span>
             <div className="adminProductPhotoFrame">
-              {product?.imageUrl ? (
+              {imageUrl ? (
                 <Image
-                  alt={product.name}
+                  alt={name || "Основное фото товара"}
                   className="adminProductPhoto"
                   height={220}
-                  src={product.imageUrl}
+                  src={imageUrl}
                   width={220}
                 />
               ) : (
                 <strong>Фото не добавлено</strong>
               )}
             </div>
+            <label className="adminProductPhotoUpload">
+              <span>Файл фото</span>
+              <input
+                accept="image/jpeg,image/png,image/webp"
+                disabled={isUploadingImage}
+                onChange={handleImageFileChange}
+                type="file"
+              />
+            </label>
+            {selectedImageFile ? (
+              <p className="adminProductPhotoHint">{selectedImageFile.name}</p>
+            ) : (
+              <p className="adminProductPhotoHint">JPG, PNG или WebP до 5 МБ.</p>
+            )}
+            {imageError ? <p className="adminFormError">{imageError}</p> : null}
+            <button
+              className="adminProductPhotoButton"
+              disabled={isUploadingImage || !selectedImageFile}
+              onClick={handleImageUpload}
+              type="button"
+            >
+              {isUploadingImage ? "Загружаем..." : imageUrl ? "Заменить фото" : "Загрузить фото"}
+            </button>
           </aside>
         </div>
 
         {error ? <p className="adminFormError">{error}</p> : null}
 
         <div className="adminProductFormActions">
-          <button disabled={isSubmitting} type="submit">
+          <button disabled={isSubmitting || isUploadingImage} type="submit">
             {isSubmitting ? "Сохраняем..." : submitLabel}
           </button>
           <Link href={cancelHref}>Отмена</Link>
