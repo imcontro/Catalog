@@ -2,17 +2,23 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { AdminProductListKind } from "@/server/admin/products";
+import type {
+  AdminProductListKind,
+  AdminProductStatus
+} from "@/server/admin/products";
 
 type AdminProductQuickActionsProps = {
   kind: AdminProductListKind;
   productId: string;
   productName: string;
+  productStatus: AdminProductStatus;
 };
 
-type ProductAction = "hide" | "restore" | "delete";
+type ProductAction = "markOutOfStock" | "markActive" | "hide" | "restore" | "delete";
 
 const actionLabels: Record<ProductAction, string> = {
+  markOutOfStock: "Нет в наличии",
+  markActive: "В наличие",
   hide: "Скрыть",
   restore: "Вернуть в каталог",
   delete: "Удалить"
@@ -21,12 +27,13 @@ const actionLabels: Record<ProductAction, string> = {
 export function AdminProductQuickActions({
   kind,
   productId,
-  productName
+  productName,
+  productStatus
 }: AdminProductQuickActionsProps) {
   const router = useRouter();
   const [pendingAction, setPendingAction] = useState<ProductAction | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const actions = getActionsByKind(kind);
+  const actions = getActionsByKind(kind, productStatus);
 
   async function runAction(action: ProductAction) {
     if (!window.confirm(getConfirmText(action, productName))) {
@@ -54,7 +61,9 @@ export function AdminProductQuickActions({
 
       router.refresh();
     } catch {
-      setError("Не удалось выполнить действие. Проверьте соединение и попробуйте еще раз.");
+      setError(
+        "Не удалось выполнить действие. Проверьте соединение и попробуйте еще раз."
+      );
     } finally {
       setPendingAction(null);
     }
@@ -86,8 +95,19 @@ export function AdminProductQuickActions({
   );
 }
 
-function getActionsByKind(kind: AdminProductListKind): ProductAction[] {
+function getActionsByKind(
+  kind: AdminProductListKind,
+  productStatus: AdminProductStatus
+): ProductAction[] {
   if (kind === "products") {
+    if (productStatus === "active") {
+      return ["markOutOfStock", "hide", "delete"];
+    }
+
+    if (productStatus === "out_of_stock") {
+      return ["markActive", "hide", "delete"];
+    }
+
     return ["hide", "delete"];
   }
 
@@ -99,6 +119,14 @@ function getActionsByKind(kind: AdminProductListKind): ProductAction[] {
 }
 
 function getActionUrl(productId: string, action: ProductAction) {
+  if (action === "markOutOfStock") {
+    return `/api/admin/products/${productId}/mark-out-of-stock`;
+  }
+
+  if (action === "markActive") {
+    return `/api/admin/products/${productId}/mark-active`;
+  }
+
   if (action === "hide") {
     return `/api/admin/products/${productId}/hide`;
   }
@@ -111,6 +139,14 @@ function getActionUrl(productId: string, action: ProductAction) {
 }
 
 function getConfirmText(action: ProductAction, productName: string) {
+  if (action === "markOutOfStock") {
+    return `Отметить товар "${productName}" как нет в наличии? Клиент увидит товар, но не сможет добавить его в заказ.`;
+  }
+
+  if (action === "markActive") {
+    return `Вернуть товар "${productName}" в наличие? Клиент сможет добавить его в заказ, если все обязательные данные заполнены.`;
+  }
+
   if (action === "hide") {
     return `Скрыть товар "${productName}" из клиентского каталога?`;
   }
@@ -137,6 +173,14 @@ async function getResponseMessage(response: Response, action: ProductAction) {
 }
 
 function getFallbackError(action: ProductAction) {
+  if (action === "markOutOfStock") {
+    return "Не удалось отметить товар как нет в наличии. Попробуйте еще раз.";
+  }
+
+  if (action === "markActive") {
+    return "Не удалось вернуть товар в наличие. Попробуйте еще раз.";
+  }
+
   if (action === "hide") {
     return "Не удалось скрыть товар. Попробуйте еще раз.";
   }

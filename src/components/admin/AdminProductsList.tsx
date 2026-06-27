@@ -177,6 +177,7 @@ export function AdminProductsList({
                 kind={kind}
                 productId={product.id}
                 productName={capitalizeDisplayName(product.name)}
+                productStatus={product.status}
               />
             </article>
           ))}
