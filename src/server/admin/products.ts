@@ -1,6 +1,6 @@
 import { and, asc, eq, ilike, inArray, isNull, ne, sql } from "drizzle-orm";
 import { createDatabaseConnection } from "../db/client";
-import { categories, images, products } from "../db/schema";
+import { categories, images, productFlavors, products } from "../db/schema";
 
 export type AdminProductListKind = "products" | "drafts" | "hidden";
 export type AdminProductStatus = "active" | "out_of_stock" | "hidden" | "draft";
@@ -27,6 +27,17 @@ export type AdminProductListItem = {
 
 export type AdminProductEditItem = AdminProductListItem & {
   mainImageId: string | null;
+  flavors: AdminProductFlavorItem[];
+};
+
+export type AdminProductFlavorItem = {
+  id: string;
+  name: string;
+  priceRub: number | null;
+  imageId: string | null;
+  imageUrl: string | null;
+  isOutOfStock: boolean;
+  sortOrder: number;
 };
 
 export type AdminProductMutationInput = {
@@ -36,6 +47,16 @@ export type AdminProductMutationInput = {
   packQuantity: number | null;
   mainImageId: string | null;
   status: AdminProductStatus;
+  hasFlavorChoice: boolean;
+  flavors: AdminProductFlavorMutationInput[];
+};
+
+export type AdminProductFlavorMutationInput = {
+  id: string | null;
+  name: string;
+  priceRub: number | null;
+  imageId: string | null;
+  isOutOfStock: boolean;
 };
 
 export class AdminProductMutationError extends Error {
@@ -49,6 +70,9 @@ export class AdminProductMutationError extends Error {
 
 const MAX_SEARCH_LENGTH = 120;
 const ADMIN_PRODUCT_STATUSES = ["active", "out_of_stock", "hidden", "draft"] as const;
+type ProductMutationTransaction = Parameters<
+  Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]
+>[0];
 
 export async function getAdminProductsList({
   kind,
@@ -126,7 +150,29 @@ export async function getAdminProductForEdit(
       .where(and(eq(products.id, id), isNull(products.deletedAt)))
       .limit(1);
 
-    return row ?? null;
+    if (!row) {
+      return null;
+    }
+
+    const flavorRows = await db
+      .select({
+        id: productFlavors.id,
+        name: productFlavors.name,
+        priceRub: productFlavors.priceRub,
+        imageId: productFlavors.imageId,
+        imageUrl: images.publicUrl,
+        isOutOfStock: productFlavors.isOutOfStock,
+        sortOrder: productFlavors.sortOrder
+      })
+      .from(productFlavors)
+      .leftJoin(images, eq(productFlavors.imageId, images.id))
+      .where(eq(productFlavors.productId, id))
+      .orderBy(asc(productFlavors.sortOrder), asc(productFlavors.name));
+
+    return {
+      ...row,
+      flavors: flavorRows
+    };
   } finally {
     await queryClient.end({ timeout: 5 });
   }
@@ -159,6 +205,7 @@ export async function createAdminProduct(input: AdminProductMutationInput) {
     return await db.transaction(async (tx) => {
       await validateCategory(tx, normalizedInput.categoryId);
       await validateMainImage(tx, normalizedInput.mainImageId);
+      await validateFlavorImages(tx, normalizedInput.flavors);
       validatePublicationData(normalizedInput, normalizedInput.mainImageId);
 
       const allDrinksSortOrder = await getNextAllDrinksSortOrder(tx);
@@ -174,7 +221,7 @@ export async function createAdminProduct(input: AdminProductMutationInput) {
           packQuantity: normalizedInput.packQuantity,
           mainImageId: normalizedInput.mainImageId,
           status: normalizedInput.status,
-          hasFlavorChoice: false,
+          hasFlavorChoice: normalizedInput.hasFlavorChoice,
           allDrinksSortOrder,
           categorySortOrder
         })
@@ -186,6 +233,8 @@ export async function createAdminProduct(input: AdminProductMutationInput) {
       if (!createdProduct) {
         throw new AdminProductMutationError("Не удалось сохранить товар.", 500);
       }
+
+      await insertAdminProductFlavors(tx, createdProduct.id, normalizedInput.flavors);
 
       return {
         id: createdProduct.id,
@@ -219,6 +268,7 @@ export async function updateAdminProduct(id: string, input: AdminProductMutation
 
       await validateCategory(tx, normalizedInput.categoryId);
       await validateMainImage(tx, normalizedInput.mainImageId);
+      await validateFlavorImages(tx, normalizedInput.flavors);
       validatePublicationData(normalizedInput, normalizedInput.mainImageId);
 
       const categoryChanged = currentProduct.categoryId !== normalizedInput.categoryId;
@@ -237,10 +287,13 @@ export async function updateAdminProduct(id: string, input: AdminProductMutation
           packQuantity: normalizedInput.packQuantity,
           mainImageId: normalizedInput.mainImageId,
           status: normalizedInput.status,
+          hasFlavorChoice: normalizedInput.hasFlavorChoice,
           categorySortOrder: nextCategorySortOrder,
           updatedAt: new Date()
         })
         .where(eq(products.id, id));
+
+      await syncAdminProductFlavors(tx, id, normalizedInput.flavors);
 
       if (categoryChanged && currentProduct.categoryId) {
         const oldCategoryProducts = await tx
@@ -341,7 +394,9 @@ export async function restoreHiddenAdminProduct(id: string) {
         priceRub: currentProduct.priceRub,
         packQuantity: currentProduct.packQuantity,
         mainImageId: currentProduct.mainImageId,
-        status: "active"
+        status: "active",
+        hasFlavorChoice: false,
+        flavors: []
       },
       currentProduct.mainImageId
     );
@@ -453,18 +508,42 @@ function normalizeMutationInput(input: AdminProductMutationInput) {
     throw new AdminProductMutationError("Введите название товара.");
   }
 
+  const flavors = input.hasFlavorChoice
+    ? input.flavors.map((flavor) => ({
+        id: flavor.id,
+        name: flavor.name.trim(),
+        priceRub: flavor.priceRub,
+        imageId: flavor.imageId,
+        isOutOfStock: flavor.isOutOfStock
+      }))
+    : [];
+
+  if (input.hasFlavorChoice && flavors.length === 0) {
+    throw new AdminProductMutationError(
+      "Добавьте хотя бы один вкус или выключите выбор вкуса."
+    );
+  }
+
+  const emptyFlavor = flavors.find((flavor) => !flavor.name);
+
+  if (emptyFlavor) {
+    throw new AdminProductMutationError("Введите название каждого вкуса.");
+  }
+
   return {
     name,
     categoryId: input.categoryId,
     priceRub: input.priceRub,
     packQuantity: input.packQuantity,
     mainImageId: input.mainImageId,
-    status: input.status
+    status: input.status,
+    hasFlavorChoice: input.hasFlavorChoice,
+    flavors
   };
 }
 
 async function validateCategory(
-  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0],
+  db: ProductMutationTransaction,
   categoryId: string | null
 ) {
   if (!categoryId) {
@@ -485,7 +564,7 @@ async function validateCategory(
 }
 
 async function validateMainImage(
-  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0],
+  db: ProductMutationTransaction,
   mainImageId: string | null
 ) {
   if (!mainImageId) {
@@ -502,6 +581,36 @@ async function validateMainImage(
 
   if (!image) {
     throw new AdminProductMutationError("Выбранное фото не найдено.");
+  }
+}
+
+async function validateFlavorImages(
+  db: ProductMutationTransaction,
+  flavors: AdminProductFlavorMutationInput[]
+) {
+  const imageIds = Array.from(
+    new Set(
+      flavors
+        .map((flavor) => flavor.imageId)
+        .filter((imageId): imageId is string => imageId !== null)
+    )
+  );
+
+  if (imageIds.length === 0) {
+    return;
+  }
+
+  const rows = await db
+    .select({
+      id: images.id
+    })
+    .from(images)
+    .where(inArray(images.id, imageIds));
+  const existingImageIds = new Set(rows.map((image) => image.id));
+  const missingImageId = imageIds.find((imageId) => !existingImageIds.has(imageId));
+
+  if (missingImageId) {
+    throw new AdminProductMutationError("Выбранное фото вкуса не найдено.");
   }
 }
 
@@ -537,7 +646,7 @@ function validatePublicationData(
 }
 
 async function getNextAllDrinksSortOrder(
-  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0]
+  db: ProductMutationTransaction
 ) {
   const [row] = await db
     .select({
@@ -550,7 +659,7 @@ async function getNextAllDrinksSortOrder(
 }
 
 async function getNextCategorySortOrder(
-  db: Parameters<Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]>[0],
+  db: ProductMutationTransaction,
   categoryId: string
 ) {
   const [row] = await db
@@ -561,4 +670,86 @@ async function getNextCategorySortOrder(
     .where(and(isNull(products.deletedAt), eq(products.categoryId, categoryId)));
 
   return Number(row?.value ?? -1) + 1;
+}
+
+async function insertAdminProductFlavors(
+  db: ProductMutationTransaction,
+  productId: string,
+  flavors: AdminProductFlavorMutationInput[]
+) {
+  if (flavors.length === 0) {
+    return;
+  }
+
+  await db.insert(productFlavors).values(
+    flavors.map((flavor, index) => ({
+      productId,
+      name: flavor.name,
+      priceRub: flavor.priceRub,
+      imageId: flavor.imageId,
+      isOutOfStock: flavor.isOutOfStock,
+      sortOrder: index
+    }))
+  );
+}
+
+async function syncAdminProductFlavors(
+  db: ProductMutationTransaction,
+  productId: string,
+  flavors: AdminProductFlavorMutationInput[]
+) {
+  const currentFlavors = await db
+    .select({
+      id: productFlavors.id
+    })
+    .from(productFlavors)
+    .where(eq(productFlavors.productId, productId));
+  const currentFlavorIds = new Set(currentFlavors.map((flavor) => flavor.id));
+  const submittedExistingIds = new Set(
+    flavors
+      .map((flavor) => flavor.id)
+      .filter((id): id is string => id !== null)
+  );
+  const unknownFlavorId = Array.from(submittedExistingIds).find(
+    (id) => !currentFlavorIds.has(id)
+  );
+
+  if (unknownFlavorId) {
+    throw new AdminProductMutationError("Вкус товара не найден.");
+  }
+
+  const flavorIdsToDelete = currentFlavors
+    .map((flavor) => flavor.id)
+    .filter((id) => !submittedExistingIds.has(id));
+
+  if (flavorIdsToDelete.length > 0) {
+    await db.delete(productFlavors).where(inArray(productFlavors.id, flavorIdsToDelete));
+  }
+
+  await Promise.all(
+    flavors.map((flavor, index) => {
+      if (flavor.id) {
+        return db
+          .update(productFlavors)
+          .set({
+            name: flavor.name,
+            priceRub: flavor.priceRub,
+            imageId: flavor.imageId,
+            isOutOfStock: flavor.isOutOfStock,
+            sortOrder: index,
+            updatedAt: new Date()
+          })
+          .where(eq(productFlavors.id, flavor.id));
+      }
+
+      return db.insert(productFlavors).values({
+        productId,
+        name: flavor.name,
+        priceRub: flavor.priceRub,
+        imageId: flavor.imageId,
+        isOutOfStock: flavor.isOutOfStock,
+        sortOrder: index
+      });
+    })
+  );
 }

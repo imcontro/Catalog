@@ -3566,6 +3566,145 @@ textarea:focus-visible {
   opacity: 0.62;
 }
 
+.adminProductFlavorSection {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.adminProductFlavorHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.adminProductFlavorHeader h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.adminProductFlavorHeader p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.adminProductFlavorToggle,
+.adminProductFlavorStockToggle {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 9px;
+}
+
+.adminProductFlavorToggle {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: #f8faf9;
+}
+
+.adminProductFlavorToggle input,
+.adminProductFlavorStockToggle input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--teal);
+}
+
+.adminProductFlavorList {
+  display: grid;
+  gap: 12px;
+}
+
+.adminProductFlavorCard {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: #f8faf9;
+}
+
+.adminProductFlavorCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.adminProductFlavorCardHeader strong {
+  color: var(--ink);
+}
+
+.adminProductFlavorCardHeader button,
+.adminProductFlavorAddButton {
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.adminProductFlavorCardHeader button {
+  color: var(--accent-dark);
+}
+
+.adminProductFlavorFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(150px, 0.75fr) auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.adminProductFlavorPhoto {
+  display: grid;
+  grid-template-columns: 118px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.adminProductFlavorPhotoFrame {
+  display: flex;
+  width: 118px;
+  aspect-ratio: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f3f2 100%);
+  color: var(--muted);
+  text-align: center;
+}
+
+.adminProductFlavorPhotoFrame strong {
+  padding: 10px;
+  font-size: 0.78rem;
+  line-height: 1.3;
+}
+
+.adminProductFlavorPhotoControls {
+  display: grid;
+  gap: 7px;
+}
+
+.adminProductFlavorEmpty {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: #f8faf9;
+  color: var(--muted);
+  font-weight: 900;
+}
+
 .adminFormError {
   border: 1px solid #ffd0d0;
   border-radius: 8px;
@@ -3703,6 +3842,25 @@ textarea:focus-visible {
 
   .adminProductPhotoPanel {
     max-width: 260px;
+  }
+
+  .adminProductFlavorHeader {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .adminProductFlavorToggle {
+    width: fit-content;
+  }
+
+  .adminProductFlavorFields,
+  .adminProductFlavorPhoto {
+    grid-template-columns: 1fr;
+  }
+
+  .adminProductFlavorPhotoFrame {
+    width: 118px;
   }
 
   .adminTabs {
