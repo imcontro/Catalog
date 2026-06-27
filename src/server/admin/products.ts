@@ -361,6 +361,116 @@ export async function hideAdminProduct(id: string) {
   }
 }
 
+export async function markAdminProductOutOfStock(id: string) {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const [currentProduct] = await db
+      .select({
+        id: products.id,
+        status: products.status
+      })
+      .from(products)
+      .where(and(eq(products.id, id), isNull(products.deletedAt)))
+      .limit(1);
+
+    if (!currentProduct) {
+      throw new AdminProductMutationError("Товар не найден или удален.", 404);
+    }
+
+    if (currentProduct.status === "out_of_stock") {
+      throw new AdminProductMutationError("Товар уже отмечен как нет в наличии.", 409);
+    }
+
+    if (currentProduct.status !== "active") {
+      throw new AdminProductMutationError(
+        "Отметить как нет в наличии можно только доступный товар.",
+        409
+      );
+    }
+
+    await db
+      .update(products)
+      .set({
+        status: "out_of_stock",
+        updatedAt: new Date()
+      })
+      .where(eq(products.id, id));
+
+    return {
+      id,
+      redirectTo: "/admin/products"
+    };
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function markAdminProductActive(id: string) {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const [currentProduct] = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        categoryId: products.categoryId,
+        priceRub: products.priceRub,
+        packQuantity: products.packQuantity,
+        mainImageId: products.mainImageId,
+        status: products.status,
+        hasFlavorChoice: products.hasFlavorChoice
+      })
+      .from(products)
+      .where(and(eq(products.id, id), isNull(products.deletedAt)))
+      .limit(1);
+
+    if (!currentProduct) {
+      throw new AdminProductMutationError("Товар не найден или удален.", 404);
+    }
+
+    if (currentProduct.status === "active") {
+      throw new AdminProductMutationError("Товар уже доступен для заказа.", 409);
+    }
+
+    if (currentProduct.status !== "out_of_stock") {
+      throw new AdminProductMutationError(
+        "Вернуть в наличие можно только товар со статусом нет в наличии.",
+        409
+      );
+    }
+
+    validatePublicationData(
+      {
+        name: currentProduct.name,
+        categoryId: currentProduct.categoryId,
+        priceRub: currentProduct.priceRub,
+        packQuantity: currentProduct.packQuantity,
+        mainImageId: currentProduct.mainImageId,
+        status: "active",
+        hasFlavorChoice: currentProduct.hasFlavorChoice,
+        flavors: []
+      },
+      currentProduct.mainImageId
+    );
+
+    await db
+      .update(products)
+      .set({
+        status: "active",
+        updatedAt: new Date()
+      })
+      .where(eq(products.id, id));
+
+    return {
+      id,
+      redirectTo: "/admin/products"
+    };
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
 export async function restoreHiddenAdminProduct(id: string) {
   const { db, queryClient } = createDatabaseConnection();
 
