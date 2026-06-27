@@ -23,6 +23,8 @@ export function parseAdminProductPayload(value: unknown): AdminProductMutationIn
     typeof value.mainImageId === "string" && value.mainImageId.trim()
       ? value.mainImageId.trim()
       : null;
+  const hasFlavorChoice = value.hasFlavorChoice === true;
+  const flavors = hasFlavorChoice ? parseAdminProductFlavors(value.flavors) : [];
 
   if (!isAdminProductStatus(value.status)) {
     throw new AdminProductMutationError("Выберите корректный статус товара.");
@@ -34,8 +36,36 @@ export function parseAdminProductPayload(value: unknown): AdminProductMutationIn
     priceRub,
     packQuantity,
     mainImageId,
-    status: value.status
+    status: value.status,
+    hasFlavorChoice,
+    flavors
   };
+}
+
+function parseAdminProductFlavors(value: unknown) {
+  if (!Array.isArray(value)) {
+    throw new AdminProductMutationError("Добавьте хотя бы один вкус или выключите выбор вкуса.");
+  }
+
+  return value.map((flavor) => {
+    if (!isRecord(flavor)) {
+      throw new AdminProductMutationError("Не удалось прочитать данные вкуса.");
+    }
+
+    const id = typeof flavor.id === "string" && flavor.id.trim() ? flavor.id.trim() : null;
+    const imageId =
+      typeof flavor.imageId === "string" && flavor.imageId.trim()
+        ? flavor.imageId.trim()
+        : null;
+
+    return {
+      id,
+      name: typeof flavor.name === "string" ? flavor.name : "",
+      priceRub: parseNullablePositiveInteger(flavor.priceRub, "цену вкуса"),
+      imageId,
+      isOutOfStock: flavor.isOutOfStock === true
+    };
+  });
 }
 
 function parseNullablePositiveInteger(value: unknown, fieldName: string) {
