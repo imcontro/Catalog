@@ -3898,6 +3898,174 @@ textarea:focus-visible {
   color: var(--accent-dark) !important;
 }
 
+.adminSortPanel {
+  display: grid;
+  gap: 14px;
+}
+
+.adminSortHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.adminSortHeader h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.35rem;
+  line-height: 1.2;
+}
+
+.adminSortHeader p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.adminSortHeader button,
+.adminSortableButtons button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: #f8faf9;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.adminSortHeader button {
+  flex: 0 0 auto;
+  border: 0;
+  background: var(--accent);
+  color: #fffaf4;
+}
+
+.adminSortHeader button:disabled,
+.adminSortableButtons button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.adminSortableList {
+  display: grid;
+  gap: 10px;
+}
+
+.adminSortableRow {
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--surface);
+  box-shadow: 0 8px 18px rgba(24, 21, 19, 0.04);
+}
+
+.adminSortableRowNoImage {
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+}
+
+.adminSortableRowDragged {
+  opacity: 0.62;
+}
+
+.adminSortableRowOver {
+  border-color: rgba(19, 127, 117, 0.34);
+  background: rgba(19, 127, 117, 0.06);
+}
+
+.adminSortableHandle {
+  display: grid;
+  gap: 3px;
+  width: 22px;
+  cursor: grab;
+}
+
+.adminSortableHandle span {
+  display: block;
+  width: 18px;
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(46, 39, 34, 0.34);
+}
+
+.adminSortablePosition {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--charcoal);
+  color: #fffaf4;
+  font-weight: 900;
+}
+
+.adminSortableImage {
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f8faf9;
+}
+
+.adminSortableMain {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.adminSortableMain h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.adminSortableMain p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.adminSortableMeta {
+  display: grid;
+  gap: 6px;
+  justify-items: end;
+  min-width: 116px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.adminSortableMeta span {
+  border-radius: 999px;
+  padding: 5px 8px;
+  background: rgba(19, 127, 117, 0.09);
+  color: var(--teal);
+}
+
+.adminSortableMeta strong {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.adminSortableButtons {
+  display: flex;
+  gap: 7px;
+}
+
 .adminProductFormActions {
   display: flex;
   flex-wrap: wrap;
@@ -4112,6 +4280,43 @@ textarea:focus-visible {
 
   .adminCategoryEditForm {
     grid-column: 1 / -1;
+  }
+
+  .adminSortHeader {
+    display: grid;
+    padding: 14px;
+  }
+
+  .adminSortHeader button {
+    width: 100%;
+  }
+
+  .adminSortableRow {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .adminSortableRowNoImage {
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+
+  .adminSortableImage {
+    grid-column: 1 / 3;
+  }
+
+  .adminSortableMain {
+    grid-column: 3 / -1;
+  }
+
+  .adminSortableMeta,
+  .adminSortableButtons {
+    grid-column: 1 / -1;
+    justify-items: start;
+  }
+
+  .adminSortableButtons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .topBar {

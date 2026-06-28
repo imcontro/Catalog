@@ -19,6 +19,9 @@ export class AdminCategoryMutationError extends Error {
 }
 
 const MAX_CATEGORY_NAME_LENGTH = 80;
+type CategoryMutationTransaction = Parameters<
+  Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]
+>[0];
 
 export async function getAdminCategories(): Promise<AdminCategoryItem[]> {
   const { db, queryClient } = createDatabaseConnection();
@@ -180,6 +183,47 @@ export async function deleteAdminCategory(id: string) {
   }
 }
 
+export async function reorderAdminCategories(input: { ids: string[] }) {
+  const ids = normalizeReorderIds(input.ids);
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    return await db.transaction(async (tx) => {
+      const currentCategories = await tx
+        .select({
+          id: categories.id
+        })
+        .from(categories)
+        .orderBy(asc(categories.sortOrder), asc(categories.name));
+
+      validateCompleteReorderList({
+        submittedIds: ids,
+        currentIds: currentCategories.map((category) => category.id),
+        emptyMessage: "Нет категорий для сортировки.",
+        mismatchMessage: "Список категорий изменился. Обновите страницу и попробуйте еще раз."
+      });
+
+      await Promise.all(
+        ids.map((id, index) =>
+          tx
+            .update(categories)
+            .set({
+              sortOrder: index,
+              updatedAt: new Date()
+            })
+            .where(eq(categories.id, id))
+        )
+      );
+
+      return {
+        count: ids.length
+      };
+    });
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
 function normalizeCategoryName(value: string) {
   const name = value.trim().replace(/\s+/g, " ").slice(0, MAX_CATEGORY_NAME_LENGTH);
 
@@ -191,9 +235,7 @@ function normalizeCategoryName(value: string) {
 }
 
 async function validateUniqueCategoryName(
-  db: Parameters<
-    Parameters<ReturnType<typeof createDatabaseConnection>["db"]["transaction"]>[0]
-  >[0],
+  db: CategoryMutationTransaction,
   name: string,
   excludedCategoryId?: string
 ) {
@@ -211,5 +253,50 @@ async function validateUniqueCategoryName(
 
   if (existingCategory) {
     throw new AdminCategoryMutationError("Категория с таким названием уже есть.");
+  }
+}
+
+function normalizeReorderIds(value: string[]) {
+  const ids = value
+    .filter((id): id is string => typeof id === "string")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const uniqueIds = new Set(ids);
+
+  if (ids.length === 0) {
+    throw new AdminCategoryMutationError("Нет элементов для сохранения порядка.");
+  }
+
+  if (uniqueIds.size !== ids.length) {
+    throw new AdminCategoryMutationError("В списке сортировки есть повторяющиеся элементы.");
+  }
+
+  return ids;
+}
+
+function validateCompleteReorderList({
+  submittedIds,
+  currentIds,
+  emptyMessage,
+  mismatchMessage
+}: {
+  submittedIds: string[];
+  currentIds: string[];
+  emptyMessage: string;
+  mismatchMessage: string;
+}) {
+  if (currentIds.length === 0) {
+    throw new AdminCategoryMutationError(emptyMessage, 409);
+  }
+
+  if (submittedIds.length !== currentIds.length) {
+    throw new AdminCategoryMutationError(mismatchMessage, 409);
+  }
+
+  const currentIdSet = new Set(currentIds);
+  const unknownId = submittedIds.find((id) => !currentIdSet.has(id));
+
+  if (unknownId) {
+    throw new AdminCategoryMutationError(mismatchMessage, 409);
   }
 }

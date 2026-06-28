@@ -6,6 +6,40 @@
 
 ## Записи
 
+### 2026-06-28 - Админка: ручная сортировка каталога
+
+- Work plan: `docs/work-plans/completed/2026-06-28-admin-manual-sorting.work-plan.md`
+- Ветка: `feature/admin-manual-sorting`
+- Pull Request:
+- Области: admin, frontend
+
+Сделано:
+
+- На странице `/admin/categories` добавлена ручная сортировка реальных категорий.
+- Добавлен защищенный раздел `/admin/sorting/all` для ручной сортировки товаров в фильтре **Все напитки**.
+- Добавлен защищенный раздел `/admin/sorting/category/{id}` для ручной сортировки товаров внутри отдельной категории.
+- Добавлены защищенные API `POST /api/admin/categories/reorder`, `POST /api/admin/products/reorder-all` и `POST /api/admin/categories/{id}/products/reorder`.
+- Сервер проверяет админскую сессию, полный список `id`, неизвестные или повторяющиеся элементы и принадлежность товаров выбранной категории.
+- Сервер сохраняет порядок в `categories.sort_order`, `products.all_drinks_sort_order` и `products.category_sort_order` с нормализацией без пустых мест.
+- Интерфейс сортировки поддерживает перетаскивание и кнопки **Вверх** / **Вниз** для удобной проверки на телефоне.
+- Порядок **Все напитки** и порядок внутри категории остаются независимыми.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- `/admin/sorting/all` и `/admin/sorting/category/{id}` без сессии переводят на `/admin/login`.
+- API сортировки без сессии возвращают `401`.
+- Ручная проверка владельцем.
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Перенос товаров между категориями, редактирование товаров, сортировка вкусов и изменение клиентского дизайна не входили в этот work plan.
+- Pull Request и merge владелец делает сам на GitHub.
+
 ### 2026-06-28 - Админка: управление категориями
 
 - Work plan: `docs/work-plans/completed/2026-06-27-admin-categories-management.work-plan.md`
