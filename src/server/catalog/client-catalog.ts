@@ -125,13 +125,16 @@ function toClientProduct({
   const hasAvailableFlavor =
     !product.hasFlavorChoice || clientFlavors.some((flavor) => flavor.isOrderable);
   const isOrderable = product.status === "active" && hasAvailableFlavor;
+  const effectivePriceRub = firstFlavor?.priceRub ?? product.priceRub;
 
   return {
     id: product.id,
     categoryId: product.categoryId,
     name: product.name,
-    priceRub: firstFlavor?.priceRub ?? product.priceRub,
+    priceRub: effectivePriceRub,
     packQuantity: product.packQuantity,
+    unitPriceRub: getUnitPriceRub(effectivePriceRub, product.packQuantity),
+    unitPriceLabel: formatUnitPrice(effectivePriceRub, product.packQuantity),
     imageUrl: firstFlavor?.imageUrl ?? mainImage.publicUrl,
     status: product.status,
     isOrderable,
@@ -166,4 +169,16 @@ function toClientFlavor({
     isOrderable: productStatus === "active" && !flavor.isOutOfStock,
     sortOrder: flavor.sortOrder
   };
+}
+
+function getUnitPriceRub(priceRub: number, packQuantity: number) {
+  return priceRub / packQuantity;
+}
+
+function formatUnitPrice(priceRub: number, packQuantity: number) {
+  const formattedUnitPrice = getUnitPriceRub(priceRub, packQuantity).toLocaleString("ru-RU", {
+    maximumFractionDigits: 1
+  });
+
+  return `≈ ${formattedUnitPrice} ₽/шт`;
 }
