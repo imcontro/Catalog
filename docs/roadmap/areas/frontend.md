@@ -4,6 +4,33 @@
 
 ## Записи
 
+### 2026-06-28 - Нестандартные состояния перед деплоем
+
+- Work plan: `docs/work-plans/completed/2026-06-28-nonstandard-states-predeploy-check.work-plan.md`
+- Ветка: `feature/nonstandard-states-predeploy-check`
+- Pull Request:
+
+Сделано:
+
+- Проведен frontend-аудит нестандартных состояний каталога, корзины, оформления заказа и админки.
+- Карточка товара с вкусами выбирает первый доступный вкус по умолчанию, если клиент не выбрал вкус вручную.
+- Недоступные вкусы отображаются в списке как **нет в наличии** и остаются недоступными для заказа.
+- Корзина использует единый текст подсказки бесплатной доставки из общих cart-utils.
+- Документация specs и user stories приведена к фактическому утвержденному поведению.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- HTTP 200 для `/`, `/cart` и `/admin/login`.
+- Ручная проверка владельцем.
+
+Заметки:
+
+- Новые зависимости, серверные API и Vercel-деплой не добавлялись.
+
 ### 2026-06-28 - Админка: responsive UI/UX редизайн
 
 - Work plan: `docs/work-plans/completed/2026-06-28-admin-ui-ux-redesign.work-plan.md`

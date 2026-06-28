@@ -494,7 +494,8 @@ function ProductCard({
   const priceRub = selectedFlavor?.priceRub ?? product.priceRub;
   const unitPriceLabel = formatUnitPrice(priceRub, product.packQuantity);
   const isSelectedFlavorOrderable = selectedFlavor?.isOrderable ?? product.isOrderable;
-  const isCardOrderable = product.isOrderable && isSelectedFlavorOrderable;
+  const isCardOrderable =
+    product.isOrderable && (!product.hasFlavorChoice || isSelectedFlavorOrderable);
 
   return (
     <article className={isCardOrderable ? "productCard" : "productCard productCardMuted"}>
@@ -548,6 +549,7 @@ function ProductCard({
                   value={flavor.id}
                 >
                   {capitalizeDisplayName(flavor.name)}
+                  {!flavor.isOrderable ? " - нет в наличии" : ""}
                 </option>
               ))}
             </select>
@@ -759,6 +761,7 @@ function getSelectedFlavor(
 
   return (
     product.flavors.find((flavor) => flavor.id === selectedFlavorId) ??
+    product.flavors.find((flavor) => flavor.isOrderable) ??
     product.flavors[0]
   );
 }
