@@ -176,7 +176,7 @@ export function AdminCategoriesManager({ categories }: AdminCategoriesManagerPro
 
       <div className="adminCategorySystemNote">
         <strong>Все напитки</strong>
-        <span>Системный фильтр. Его нельзя удалить, переименовать или переместить.</span>
+        <span>Системный фильтр для клиента. Его нельзя удалить, переименовать или переместить.</span>
       </div>
 
       {error ? <p className="adminFormError">{error}</p> : null}
@@ -197,6 +197,7 @@ export function AdminCategoriesManager({ categories }: AdminCategoriesManagerPro
             const isPending = pendingCategoryId === category.id;
             const isUpdating = isPending && pendingAction === "update";
             const isDeleting = isPending && pendingAction === "delete";
+            const hasProducts = category.productCount > 0;
 
             return (
               <article className="adminCategoryRow" key={category.id}>
@@ -236,6 +237,11 @@ export function AdminCategoriesManager({ categories }: AdminCategoriesManagerPro
                     <div className="adminCategoryMain">
                       <h3>{capitalizeDisplayName(category.name)}</h3>
                       <p>{formatProductCount(category.productCount)}</p>
+                      <span className="adminCategoryLimitNote">
+                        {hasProducts
+                          ? "Удаление недоступно, пока в категории есть товары."
+                          : "Пустую категорию можно удалить после подтверждения."}
+                      </span>
                     </div>
 
                     <div className="adminCategoryActions">
@@ -248,7 +254,7 @@ export function AdminCategoriesManager({ categories }: AdminCategoriesManagerPro
                       </button>
                       <button
                         className="adminCategoryDangerButton"
-                        disabled={pendingAction !== null}
+                        disabled={pendingAction !== null || hasProducts}
                         onClick={() => void handleDelete(category)}
                         type="button"
                       >

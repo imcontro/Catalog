@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Paper draft: админка NapitkiBerkat</title>
+    <style>
+      :root {
+        --bg: #ece7df;
+        --board: #fffdfa;
+        --panel: #ffffff;
+        --ink: #1f1f1f;
+        --muted: #756d65;
+        --line: #ded7ce;
+        --soft: #f6f1ea;
+        --accent: #e05f2f;
+        --accent-dark: #b8421e;
+        --green: #27845a;
+        --blue: #315f9f;
+        --red: #bd3b33;
+        --yellow: #d89b22;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background:
+          linear-gradient(90deg, rgba(31, 31, 31, 0.045) 1px, transparent 1px),
+          linear-gradient(rgba(31, 31, 31, 0.045) 1px, transparent 1px),
+          var(--bg);
+        background-size: 32px 32px;
+        color: var(--ink);
+        font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      }
+
+      .canvas {
+        display: grid;
+        gap: 28px;
+        width: 1480px;
+        margin: 0 auto;
+        padding: 32px;
+      }
+
+      .canvas-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: end;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .canvas-header p {
+        margin-top: 8px;
+        color: var(--muted);
+      }
+
+      .tag {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--board);
+        padding: 8px 12px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .boards {
+        display: flex;
+        gap: 32px;
+        align-items: flex-start;
+      }
+
+      .artboard-wrap {
+        display: grid;
+        gap: 12px;
+      }
+
+      .label {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .desktop {
+        width: 1080px;
+        min-height: 760px;
+        border: 1px solid #cfc7bd;
+        border-radius: 8px;
+        background: var(--board);
+        box-shadow: 0 18px 48px rgba(46, 36, 27, 0.16);
+        overflow: hidden;
+      }
+
+      .phone {
+        width: 390px;
+        min-height: 844px;
+        border: 10px solid #1f1f1f;
+        border-radius: 34px;
+        background: var(--board);
+        box-shadow: 0 18px 48px rgba(46, 36, 27, 0.18);
+        overflow: hidden;
+      }
+
+      .admin-top {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 14px;
+        align-items: center;
+        border-bottom: 1px solid var(--line);
+        padding: 18px 22px;
+        background: #fbf8f3;
+      }
+
+      .logo {
+        display: grid;
+        width: 40px;
+        height: 40px;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--ink);
+        color: #fff;
+        font-weight: 900;
+      }
+
+      .kicker {
+        color: var(--accent-dark);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .admin-top h2 {
+        margin-top: 3px;
+        font-size: 24px;
+      }
+
+      .ghost {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: transparent;
+        padding: 9px 11px;
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .desktop-body {
+        display: grid;
+        grid-template-columns: 190px minmax(0, 1fr);
+        gap: 18px;
+        padding: 18px;
+      }
+
+      .side {
+        display: grid;
+        align-content: start;
+        gap: 8px;
+      }
+
+      .side a,
+      .tab {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 11px 12px;
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .side .active,
+      .tab.active {
+        border-color: rgba(224, 95, 47, 0.38);
+        background: #ffe9df;
+        color: var(--accent-dark);
+      }
+
+      .work {
+        display: grid;
+        gap: 14px;
+      }
+
+      .toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .search,
+      .count {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        padding: 11px 12px;
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .primary {
+        border: 0;
+        border-radius: 8px;
+        background: var(--accent);
+        padding: 12px 14px;
+        color: #fff;
+        font-weight: 900;
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .card,
+      .row,
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+      }
+
+      .card {
+        display: grid;
+        gap: 9px;
+        padding: 10px;
+      }
+
+      .photo {
+        display: grid;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background:
+          linear-gradient(145deg, rgba(224, 95, 47, 0.12), transparent 62%),
+          var(--soft);
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .card h3,
+      .row h3 {
+        font-size: 15px;
+        line-height: 1.22;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .pill {
+        border-radius: 999px;
+        background: var(--soft);
+        padding: 4px 7px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .pill.green {
+        background: #e9f6ef;
+        color: var(--green);
+      }
+
+      .pill.red {
+        background: #fff0ee;
+        color: var(--red);
+      }
+
+      .pill.yellow {
+        background: #fff4d8;
+        color: #8b630f;
+      }
+
+      .card-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      .card-actions button,
+      .row-actions button {
+        min-height: 36px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        font-weight: 900;
+      }
+
+      .card-actions .edit {
+        grid-column: 1 / -1;
+        border-color: rgba(224, 95, 47, 0.35);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .phone-top {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        padding: 14px 14px 10px;
+        background: #fbf8f3;
+      }
+
+      .phone-top .logo {
+        width: 34px;
+        height: 34px;
+      }
+
+      .phone-top h2 {
+        font-size: 18px;
+      }
+
+      .phone-tabs {
+        display: flex;
+        gap: 7px;
+        overflow-x: auto;
+        border-bottom: 1px solid var(--line);
+        padding: 8px 14px 10px;
+        background: #fbf8f3;
+      }
+
+      .phone-tabs .tab {
+        flex: 0 0 auto;
+        padding: 9px 10px;
+        font-size: 13px;
+      }
+
+      .phone-body {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .phone-toolbar {
+        display: grid;
+        gap: 8px;
+      }
+
+      .phone-toolbar .primary {
+        width: 100%;
+      }
+
+      .phone-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 9px;
+        padding: 9px;
+      }
+
+      .row .photo {
+        width: 64px;
+        height: 64px;
+        aspect-ratio: auto;
+        font-size: 11px;
+      }
+
+      .row-main {
+        display: grid;
+        gap: 5px;
+        min-width: 0;
+      }
+
+      .row-main p {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .row-actions {
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: 1fr 1fr;
+        gap: 7px;
+      }
+
+      .row-actions .edit {
+        grid-column: 1 / -1;
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .form-preview {
+        display: grid;
+        grid-template-columns: 1fr 260px;
+        gap: 12px;
+      }
+
+      .panel {
+        display: grid;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .field {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fbfaf7;
+        padding: 11px 12px;
+        color: var(--muted);
+        font-weight: 900;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="canvas">
+      <header class="canvas-header">
+        <div>
+          <h1>Paper draft: UI админки NapitkiBerkat</h1>
+          <p>Desktop сохраняет карточный обзор. Phone использует компактный список.</p>
+        </div>
+        <span class="tag">Источник: утвержденный admin UI/UX plan</span>
+      </header>
+
+      <section class="boards">
+        <div class="artboard-wrap">
+          <p class="label">Desktop / 1080px</p>
+          <article class="desktop">
+            <header class="admin-top">
+              <div class="logo">NB</div>
+              <div>
+                <p class="kicker">Управление каталогом</p>
+                <h2>Товары</h2>
+              </div>
+              <button class="ghost">Выйти</button>
+            </header>
+
+            <div class="desktop-body">
+              <nav class="side">
+                <a class="active">Товары</a>
+                <a>Черновики</a>
+                <a>Скрытые</a>
+                <a>Категории</a>
+                <a>Сортировка</a>
+              </nav>
+
+              <section class="work">
+                <div class="toolbar">
+                  <div class="search">Поиск по названию товара</div>
+                  <div class="count">128 поз.</div>
+                  <button class="primary">Добавить товар</button>
+                </div>
+
+                <div class="product-grid">
+                  <article class="card">
+                    <div class="photo">Фото</div>
+                    <h3>Добрый Cola ж/б 0.33л</h3>
+                    <div class="meta">
+                      <span class="pill">Газировки</span>
+                      <span class="pill">1 320 руб.</span>
+                      <span class="pill green">Доступен</span>
+                    </div>
+                    <div class="card-actions">
+                      <button class="edit">Редактировать</button>
+                      <button>Нет в наличии</button>
+                      <button>Скрыть</button>
+                    </div>
+                  </article>
+
+                  <article class="card">
+                    <div class="photo">Фото</div>
+                    <h3>Flash Energy 0.45л</h3>
+                    <div class="meta">
+                      <span class="pill">Энергетики</span>
+                      <span class="pill">1 080 руб.</span>
+                      <span class="pill red">Нет в наличии</span>
+                    </div>
+                    <div class="card-actions">
+                      <button class="edit">Редактировать</button>
+                      <button>В наличие</button>
+                      <button>Скрыть</button>
+                    </div>
+                  </article>
+
+                  <article class="card">
+                    <div class="photo">Фото</div>
+                    <h3>Lipton зеленый чай 0.5л</h3>
+                    <div class="meta">
+                      <span class="pill">Чай</span>
+                      <span class="pill">960 руб.</span>
+                      <span class="pill yellow">Есть вкусы</span>
+                    </div>
+                    <div class="card-actions">
+                      <button class="edit">Редактировать</button>
+                      <button>Нет в наличии</button>
+                      <button>Скрыть</button>
+                    </div>
+                  </article>
+                </div>
+
+                <div class="form-preview">
+                  <section class="panel">
+                    <p class="kicker">Форма товара</p>
+                    <div class="field">Название товара</div>
+                    <div class="field">Категория</div>
+                    <div class="field">Цена и упаковка</div>
+                    <div class="field">Статус</div>
+                  </section>
+                  <section class="panel">
+                    <p class="kicker">Фото</p>
+                    <div class="photo">Загрузить фото</div>
+                    <button class="primary">Сохранить</button>
+                  </section>
+                </div>
+              </section>
+            </div>
+          </article>
+        </div>
+
+        <div class="artboard-wrap">
+          <p class="label">Phone / 390px</p>
+          <article class="phone">
+            <header class="phone-top">
+              <div class="logo">NB</div>
+              <div>
+                <p class="kicker">Админка</p>
+                <h2>Товары</h2>
+              </div>
+              <button class="ghost">Выйти</button>
+            </header>
+
+            <nav class="phone-tabs">
+              <span class="tab active">Товары</span>
+              <span class="tab">Черновики</span>
+              <span class="tab">Скрытые</span>
+              <span class="tab">Категории</span>
+              <span class="tab">Сортировка</span>
+            </nav>
+
+            <section class="phone-body">
+              <div class="phone-toolbar">
+                <div class="search">Поиск товара</div>
+                <button class="primary">Добавить товар</button>
+              </div>
+
+              <div class="phone-list">
+                <article class="row">
+                  <div class="photo">Фото</div>
+                  <div class="row-main">
+                    <h3>Добрый Cola ж/б 0.33л</h3>
+                    <p>1 320 руб. · 24 шт в уп</p>
+                    <div class="meta">
+                      <span class="pill green">Доступен</span>
+                      <span class="pill">Газировки</span>
+                    </div>
+                  </div>
+                  <div class="row-actions">
+                    <button class="edit">Редактировать</button>
+                    <button>Нет в наличии</button>
+                    <button>Скрыть</button>
+                  </div>
+                </article>
+
+                <article class="row">
+                  <div class="photo">Фото</div>
+                  <div class="row-main">
+                    <h3>Flash Energy 0.45л</h3>
+                    <p>1 080 руб. · 12 шт в уп</p>
+                    <div class="meta">
+                      <span class="pill red">Нет в наличии</span>
+                      <span class="pill">Энергетики</span>
+                    </div>
+                  </div>
+                  <div class="row-actions">
+                    <button class="edit">Редактировать</button>
+                    <button>В наличие</button>
+                    <button>Скрыть</button>
+                  </div>
+                </article>
+
+                <article class="row">
+                  <div class="photo">Фото</div>
+                  <div class="row-main">
+                    <h3>Lipton зеленый чай 0.5л</h3>
+                    <p>960 руб. · 12 шт в уп</p>
+                    <div class="meta">
+                      <span class="pill yellow">Есть вкусы</span>
+                      <span class="pill">Чай</span>
+                    </div>
+                  </div>
+                  <div class="row-actions">
+                    <button class="edit">Редактировать</button>
+                    <button>Нет в наличии</button>
+                    <button>Скрыть</button>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </article>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

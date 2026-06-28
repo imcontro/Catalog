@@ -321,11 +321,6 @@ export function AdminProductForm({ mode, categories, product }: AdminProductForm
         <div>
           <p className="sectionKicker">Управление каталогом</p>
           <h1 id="admin-product-form-title">{title}</h1>
-          <p>
-            {isEditMode
-              ? "Измените данные товара, фото, статус и вкусы."
-              : "Создайте товар как черновик."}
-          </p>
         </div>
         <Link className="adminFormBackLink" href={cancelHref}>
           Вернуться
@@ -335,72 +330,90 @@ export function AdminProductForm({ mode, categories, product }: AdminProductForm
       <form className="adminProductForm" noValidate onSubmit={handleSubmit}>
         <div className="adminProductFormGrid">
           <div className="adminProductFormFields">
-            <label>
-              <span>Название товара</span>
-              <input
-                name="name"
-                onChange={(event) => setName(event.target.value)}
-                type="text"
-                value={name}
-              />
-            </label>
+            <section className="adminFormBlock" aria-label="Основные данные товара">
+              <div className="adminFormBlockHeader">
+                <strong>Основные данные</strong>
+              </div>
 
-            <label>
-              <span>Категория</span>
-              <select
-                name="categoryId"
-                onChange={(event) => setCategoryId(event.target.value)}
-                value={categoryId}
-              >
-                <option value="">Категория не выбрана</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {capitalizeDisplayName(category.name)}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div className="adminProductFormPair">
               <label>
-                <span>Цена, руб.</span>
+                <span>Название товара</span>
                 <input
-                  min={1}
-                  name="priceRub"
-                  onChange={(event) => setPriceRub(event.target.value)}
-                  step={1}
-                  type="number"
-                  value={priceRub}
+                  name="name"
+                  onChange={(event) => setName(event.target.value)}
+                  type="text"
+                  value={name}
                 />
               </label>
 
               <label>
-                <span>Штук в одной уп</span>
-                <input
-                  min={1}
-                  name="packQuantity"
-                  onChange={(event) => setPackQuantity(event.target.value)}
-                  step={1}
-                  type="number"
-                  value={packQuantity}
-                />
+                <span>Категория</span>
+                <select
+                  name="categoryId"
+                  onChange={(event) => setCategoryId(event.target.value)}
+                  value={categoryId}
+                >
+                  <option value="">Категория не выбрана</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {capitalizeDisplayName(category.name)}
+                    </option>
+                  ))}
+                </select>
               </label>
-            </div>
+            </section>
 
-            <label>
-              <span>Статус товара</span>
-              <select
-                name="status"
-                onChange={(event) => setStatus(event.target.value as AdminProductStatus)}
-                value={status}
-              >
-                {statusOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <section className="adminFormBlock" aria-label="Цена и упаковка">
+              <div className="adminFormBlockHeader">
+                <strong>Цена и упаковка</strong>
+              </div>
+
+              <div className="adminProductFormPair">
+                <label>
+                  <span>Цена, руб.</span>
+                  <input
+                    min={1}
+                    name="priceRub"
+                    onChange={(event) => setPriceRub(event.target.value)}
+                    step={1}
+                    type="number"
+                    value={priceRub}
+                  />
+                </label>
+
+                <label>
+                  <span>Штук в одной уп</span>
+                  <input
+                    min={1}
+                    name="packQuantity"
+                    onChange={(event) => setPackQuantity(event.target.value)}
+                    step={1}
+                    type="number"
+                    value={packQuantity}
+                  />
+                </label>
+              </div>
+            </section>
+
+            <section className="adminFormBlock" aria-label="Статус товара">
+              <div className="adminFormBlockHeader">
+                <strong>Статус</strong>
+              </div>
+
+              <label>
+                <span>Статус товара</span>
+                <select
+                  name="status"
+                  onChange={(event) => setStatus(event.target.value as AdminProductStatus)}
+                  value={status}
+                >
+                  {statusOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </section>
           </div>
 
           <aside className="adminProductPhotoPanel">

@@ -8984,3 +8984,1050 @@ body,
     font-size: 12px;
   }
 }
+
+/* Paper artboards transfer: docs/design/admin-paper-artboards.html. */
+.adminPage,
+.loginPage {
+  --admin-bg: #ece7df;
+  --admin-board: #fffdfa;
+  --admin-panel: #ffffff;
+  --admin-ink: #1f1f1f;
+  --admin-muted: #756d65;
+  --admin-line: #ded7ce;
+  --admin-soft: #f6f1ea;
+  --admin-accent: #e05f2f;
+  --admin-accent-dark: #b8421e;
+  --admin-green: #27845a;
+  --admin-blue: #315f9f;
+  --admin-red: #bd3b33;
+  --admin-yellow: #d89b22;
+  color: var(--admin-ink);
+  font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+}
+
+.adminPage {
+  min-height: 100dvh;
+  margin: 0;
+  padding: 32px;
+  background:
+    linear-gradient(90deg, rgba(31, 31, 31, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(31, 31, 31, 0.045) 1px, transparent 1px),
+    var(--admin-bg);
+  background-size: 32px 32px;
+}
+
+.adminShell {
+  width: 1080px;
+  max-width: 100%;
+  min-height: 760px;
+  overflow: hidden;
+  gap: 0;
+  border: 1px solid #cfc7bd;
+  border-radius: 8px;
+  margin: 0 auto;
+  background: var(--admin-board);
+  box-shadow: 0 18px 48px rgba(46, 36, 27, 0.16);
+}
+
+.adminHeader,
+.adminListHeader,
+.adminFormHeader,
+.adminCategoryListHeader,
+.adminSortHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid var(--admin-line);
+  border-radius: 0;
+  padding: 18px 22px;
+  background: #fbf8f3;
+  box-shadow: none;
+}
+
+.adminHeader::before,
+.adminListHeader::before,
+.adminFormHeader::before,
+.adminCategoryListHeader::before,
+.adminSortHeader::before {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--admin-ink);
+  color: #ffffff;
+  content: "NB";
+  font-weight: 900;
+}
+
+.adminHeader > .brandLogo,
+.adminFormHeader > .brandLogo,
+.adminListHeader > .brandLogo {
+  display: none;
+}
+
+.adminHeader h1,
+.adminListHeader h1,
+.adminFormHeader h1,
+.adminCategoryListHeader h2,
+.adminSortHeader h2,
+.loginHeading h1 {
+  margin: 3px 0 0;
+  color: var(--admin-ink);
+  font-size: 24px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.adminHeader p:not(.sectionKicker),
+.adminListHeader p:not(.sectionKicker),
+.adminFormHeader p:not(.sectionKicker),
+.adminSortHeader p:not(.sectionKicker),
+.adminCategoryListHeader p:not(.sectionKicker) {
+  display: none;
+}
+
+.sectionKicker {
+  margin: 0;
+  color: var(--admin-accent-dark);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.adminLogoutButton,
+.adminFormBackLink,
+.adminProductFormActions a,
+.adminResetSearch {
+  min-height: 38px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 0 11px;
+  background: transparent;
+  color: var(--admin-muted);
+  box-shadow: none;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.adminHeader + .adminSectionGrid {
+  padding: 18px;
+}
+
+.adminSectionGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adminSectionCard {
+  display: grid;
+  min-height: 140px;
+  gap: 9px;
+  align-content: start;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--admin-panel);
+  box-shadow: none;
+  color: var(--admin-ink);
+  text-decoration: none;
+}
+
+.adminSectionCard span,
+.adminCategoryPosition,
+.adminSortablePosition {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 8px;
+  padding: 0;
+  background: var(--admin-ink);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adminSectionCard strong {
+  color: var(--admin-ink);
+  font-size: 15px;
+  line-height: 1.22;
+}
+
+.adminSectionCard p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.adminListSection,
+.adminFormSection,
+.adminSortPanel {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  gap: 18px;
+  padding: 0 18px 18px;
+}
+
+.adminListHeader,
+.adminFormHeader,
+.adminSortHeader {
+  grid-column: 1 / -1;
+  margin: 0 -18px;
+}
+
+.adminListHeader > div,
+.adminFormHeader > div,
+.adminSortHeader > div,
+.adminHeader > div,
+.adminCategoryListHeader > div {
+  min-width: 0;
+}
+
+.adminListActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.adminCountBadge,
+.adminPrimaryAction,
+.adminSearchForm button,
+.adminCategoryCreateForm button,
+.adminProductFormActions button,
+.adminSortHeader button,
+.adminProductPhotoButton {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  padding: 0 14px;
+  background: var(--admin-accent);
+  color: #ffffff;
+  box-shadow: none;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.adminCountBadge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--admin-panel);
+  color: var(--admin-muted);
+  border: 1px solid var(--admin-line);
+}
+
+.adminTabs {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  grid-column: 1;
+  grid-row: 2 / span 10;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.adminTabs a,
+.adminCategoryChip {
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  background: var(--admin-panel);
+  padding: 11px 12px;
+  color: var(--admin-muted);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.adminTabs .adminTabActive,
+.adminCategoryChipActive {
+  border-color: rgba(224, 95, 47, 0.38);
+  background: #ffe9df;
+  color: var(--admin-accent-dark);
+}
+
+.adminCategoryTabs,
+.adminSearchForm,
+.adminProductList,
+.adminCategoriesManager,
+.adminProductForm,
+.adminEmptyState {
+  grid-column: 2;
+}
+
+.adminCategoryTabs {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  scrollbar-width: thin;
+}
+
+.adminCategoryChip {
+  flex: 0 0 auto;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+.adminSearchForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: end;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.adminSearchForm label {
+  display: grid;
+  gap: 0;
+}
+
+.adminSearchForm label span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.adminSearchForm input,
+.adminProductForm input,
+.adminProductForm select,
+.adminCategoryCreateForm input,
+.adminCategoryEditForm input,
+.loginForm input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 11px 12px;
+  background: var(--admin-panel);
+  color: var(--admin-ink);
+  font-weight: 900;
+}
+
+.adminProductList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adminProductRow {
+  display: grid;
+  gap: 9px;
+  min-height: 100%;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--admin-panel);
+  box-shadow: none;
+}
+
+.adminProductImageFrame,
+.adminProductPhotoFrame,
+.adminProductFlavorPhotoFrame,
+.adminSortableImage {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(224, 95, 47, 0.12), transparent 62%),
+    var(--admin-soft);
+  color: var(--admin-muted);
+  font-weight: 900;
+}
+
+.adminProductImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.adminProductMain,
+.adminProductMeta,
+.adminProductFlags {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.adminProductMain h2,
+.adminSortableMain h3,
+.adminCategoryMain h3 {
+  margin: 0;
+  color: var(--admin-ink);
+  font-size: 15px;
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+}
+
+.adminProductMain p,
+.adminProductMeta span,
+.adminProductFlags span,
+.adminSortableMain p,
+.adminCategoryMain p,
+.adminCategoryLimitNote,
+.adminSortHint,
+.adminEmptyState p {
+  margin: 0;
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.adminProductMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border: 0;
+  padding: 0;
+}
+
+.adminProductMeta strong,
+.adminProductMeta span,
+.adminProductFlags span,
+.adminStatus,
+.adminSortableMeta span,
+.adminSortableMeta strong {
+  width: fit-content;
+  border-radius: 999px;
+  background: var(--admin-soft);
+  padding: 4px 7px;
+  color: var(--admin-muted);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.adminProductFlags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.adminProductFlags .adminStatus-active {
+  background: #e9f6ef;
+  color: var(--admin-green);
+}
+
+.adminProductFlags .adminStatus-out_of_stock {
+  background: #fff0ee;
+  color: var(--admin-red);
+}
+
+.adminProductFlags .adminStatus-hidden {
+  background: #edf4ff;
+  color: var(--admin-blue);
+}
+
+.adminProductFlags .adminStatus-draft {
+  background: #fff4d8;
+  color: #8b630f;
+}
+
+.adminProductActionStack {
+  display: grid;
+  gap: 7px;
+}
+
+.adminProductEditLink,
+.adminProductQuickAction,
+.adminCategoryActions button,
+.adminProductFlavorCardHeader button,
+.adminProductFlavorAddButton,
+.adminSortableButtons button {
+  min-height: 36px;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 0 10px;
+  background: var(--admin-panel);
+  color: var(--admin-ink);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: center;
+  text-decoration: none;
+}
+
+.adminProductEditLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  grid-column: 1 / -1;
+  border-color: rgba(224, 95, 47, 0.35);
+  background: var(--admin-accent);
+  color: #ffffff;
+}
+
+.adminProductQuickActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.adminProductQuickActionDanger,
+.adminCategoryDangerButton {
+  border-color: rgba(189, 59, 51, 0.32);
+  background: #fff0ee;
+  color: var(--admin-red);
+}
+
+.adminCategoryDangerButton:disabled {
+  background: var(--admin-soft);
+  color: var(--admin-muted);
+}
+
+.adminProductActionError,
+.adminFormError,
+.loginError {
+  grid-column: 1 / -1;
+  border: 1px solid rgba(189, 59, 51, 0.32);
+  border-radius: 8px;
+  margin: 0;
+  padding: 8px 10px;
+  background: #fff0ee;
+  color: var(--admin-red);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adminFormSuccess {
+  border: 1px solid rgba(39, 132, 90, 0.28);
+  border-radius: 8px;
+  margin: 0;
+  padding: 8px 10px;
+  background: #e9f6ef;
+  color: var(--admin-green);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adminProductForm {
+  display: grid;
+  gap: 14px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.adminProductFormGrid,
+.form-preview {
+  display: grid;
+  grid-template-columns: 1fr 260px;
+  gap: 12px;
+  align-items: start;
+}
+
+.adminProductFormFields,
+.adminFormBlock,
+.adminProductPhotoPanel,
+.adminProductFlavorSection,
+.adminCategoriesManager,
+.adminCategoryList,
+.adminSortableList {
+  display: grid;
+  gap: 10px;
+}
+
+.adminFormBlock,
+.adminProductPhotoPanel,
+.adminProductFlavorCard,
+.adminProductFlavorEmpty,
+.adminCategoryCreateForm,
+.adminCategorySystemNote,
+.adminCategoryListHeader,
+.adminCategoryRow,
+.adminSortableRow,
+.adminEmptyState,
+.adminStatePanel {
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--admin-panel);
+  box-shadow: none;
+}
+
+.adminFormBlockHeader {
+  border: 0;
+  padding: 0;
+}
+
+.adminFormBlockHeader strong,
+.adminProductPhotoPanel > span,
+.adminProductFlavorHeader h2,
+.adminEmptyState h2 {
+  color: var(--admin-ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.adminProductPhotoPanel {
+  align-content: start;
+}
+
+.adminProductPhotoFrame {
+  min-height: 170px;
+}
+
+.adminProductPhoto,
+.adminSortableImage {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+}
+
+.adminProductFlavorSection {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.adminProductFlavorHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.adminProductFlavorHeader p,
+.adminProductPhotoHint {
+  margin: 5px 0 0;
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adminProductFlavorToggle,
+.adminProductFlavorStockToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+}
+
+.adminProductFlavorToggle input,
+.adminProductFlavorStockToggle input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--admin-accent);
+}
+
+.adminProductFlavorFields,
+.adminProductFormPair,
+.adminProductFlavorPhoto,
+.adminCategoryCreateForm,
+.adminCategoryEditForm {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adminProductForm label,
+.adminCategoryCreateForm label,
+.adminCategoryEditForm label,
+.loginForm label {
+  display: grid;
+  gap: 7px;
+  color: var(--admin-ink);
+  font-weight: 900;
+}
+
+.adminProductForm label span,
+.adminCategoryCreateForm label span,
+.adminCategoryEditForm label span,
+.loginForm label span {
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.adminProductFormActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.adminCategoriesManager,
+.adminSortPanel > .adminFormError,
+.adminSortPanel > .adminFormSuccess,
+.adminSortableList,
+.adminSortPanel > .adminEmptyState {
+  grid-column: 2;
+}
+
+.adminCategoryCreateForm {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.adminCategorySystemNote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  background: #edf4ff;
+}
+
+.adminCategorySystemNote strong {
+  color: var(--admin-blue);
+}
+
+.adminCategoryRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.adminCategoryMain {
+  display: grid;
+  gap: 4px;
+}
+
+.adminCategoryActions,
+.adminSortableButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.adminSortableRow {
+  display: grid;
+  grid-template-columns: auto auto 56px minmax(0, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.adminSortableRowNoImage {
+  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+}
+
+.adminSortableHandle {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  background: var(--admin-panel);
+}
+
+.adminSortableHandle span {
+  width: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--admin-muted);
+}
+
+.adminSortableImage {
+  width: 56px;
+  height: 56px;
+  aspect-ratio: auto;
+}
+
+.adminSortableMain {
+  min-width: 0;
+}
+
+.adminSortableMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.adminSortableRowDragged {
+  opacity: 0.58;
+}
+
+.adminSortableRowOver {
+  border-color: var(--admin-accent);
+  background: #fff7ef;
+}
+
+.loginPage {
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  padding: 32px;
+  background:
+    linear-gradient(90deg, rgba(31, 31, 31, 0.045) 1px, transparent 1px),
+    linear-gradient(rgba(31, 31, 31, 0.045) 1px, transparent 1px),
+    var(--admin-bg);
+  background-size: 32px 32px;
+}
+
+.loginPanel {
+  display: grid;
+  width: min(390px, 100%);
+  gap: 16px;
+  border: 10px solid var(--admin-ink);
+  border-radius: 34px;
+  padding: 22px;
+  background: var(--admin-board);
+  box-shadow: 0 18px 48px rgba(46, 36, 27, 0.18);
+}
+
+.loginPanel::before {
+  display: none;
+}
+
+.loginPanel .brandLogo {
+  display: none;
+}
+
+.loginPanel::after {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  order: -1;
+  border-radius: 8px;
+  background: var(--admin-ink);
+  color: #ffffff;
+  content: "NB";
+  font-weight: 900;
+}
+
+.loginHeading p:not(.sectionKicker),
+.loginState {
+  color: var(--admin-muted);
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+.loginForm button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--admin-accent);
+  color: #ffffff;
+  font-weight: 900;
+}
+
+@media (max-width: 1180px) {
+  .adminPage {
+    padding: 24px;
+  }
+
+  .adminShell {
+    width: 100%;
+  }
+
+  .adminProductList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .adminPage {
+    padding: 0;
+    background: var(--admin-board);
+  }
+
+  .adminShell {
+    width: 100%;
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .adminHeader,
+  .adminListHeader,
+  .adminFormHeader,
+  .adminCategoryListHeader,
+  .adminSortHeader {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 10px;
+    padding: 14px 14px 10px;
+    background: #fbf8f3;
+  }
+
+  .adminHeader::before,
+  .adminListHeader::before,
+  .adminFormHeader::before,
+  .adminCategoryListHeader::before,
+  .adminSortHeader::before {
+    width: 34px;
+    height: 34px;
+  }
+
+  .adminHeader h1,
+  .adminListHeader h1,
+  .adminFormHeader h1,
+  .adminCategoryListHeader h2,
+  .adminSortHeader h2 {
+    font-size: 18px;
+  }
+
+  .adminHeader p:not(.sectionKicker),
+  .adminListHeader p:not(.sectionKicker),
+  .adminFormHeader p:not(.sectionKicker),
+  .adminSortHeader p:not(.sectionKicker) {
+    display: none !important;
+  }
+
+  .adminListSection,
+  .adminFormSection,
+  .adminSortPanel {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 0 12px 12px;
+  }
+
+  .adminListHeader,
+  .adminFormHeader,
+  .adminSortHeader {
+    grid-column: 1;
+    margin: 0 -12px;
+  }
+
+  .adminTabs {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    grid-column: 1;
+    grid-row: auto;
+    border-bottom: 1px solid var(--admin-line);
+    margin: 0 -12px;
+    padding: 8px 14px 10px;
+    background: #fbf8f3;
+  }
+
+  .adminTabs a,
+  .adminCategoryChip {
+    flex: 0 0 auto;
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+
+  .adminCategoryTabs,
+  .adminSearchForm,
+  .adminProductList,
+  .adminCategoriesManager,
+  .adminProductForm,
+  .adminEmptyState,
+  .adminSortPanel > .adminFormError,
+  .adminSortPanel > .adminFormSuccess,
+  .adminSortableList,
+  .adminSortPanel > .adminEmptyState {
+    grid-column: 1;
+  }
+
+  .adminSearchForm {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .adminSearchForm button,
+  .adminPrimaryAction,
+  .adminFormBackLink,
+  .adminProductFormActions a,
+  .adminSortHeader button {
+    width: 100%;
+  }
+
+  .adminListActions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    width: 100%;
+  }
+
+  .adminListActions .adminPrimaryAction {
+    grid-column: 1 / -1;
+  }
+
+  .adminProductList {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .adminProductRow {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 9px;
+    padding: 9px;
+  }
+
+  .adminProductImageFrame {
+    width: 64px;
+    height: 64px;
+    aspect-ratio: auto;
+    font-size: 11px;
+  }
+
+  .adminProductMain,
+  .adminProductMeta,
+  .adminProductFlags {
+    min-width: 0;
+  }
+
+  .adminProductMeta,
+  .adminProductFlags,
+  .adminProductActionStack {
+    grid-column: 2;
+  }
+
+  .adminProductActionStack {
+    grid-column: 1 / -1;
+  }
+
+  .adminProductQuickActions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .adminProductFormGrid,
+  .adminProductFormPair,
+  .adminProductFlavorFields,
+  .adminProductFlavorPhoto,
+  .adminCategoryCreateForm,
+  .adminCategoryEditForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminSectionGrid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .adminSectionCard {
+    min-height: auto;
+  }
+
+  .adminCategoryRow,
+  .adminSortableRow,
+  .adminSortableRowNoImage {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .adminCategoryActions,
+  .adminSortableMeta,
+  .adminSortableButtons,
+  .adminSortableImage {
+    grid-column: 1 / -1;
+  }
+
+  .adminCategoryActions,
+  .adminSortableButtons {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

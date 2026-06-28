@@ -34,7 +34,7 @@ export default async function AdminAllDrinksSortingPage() {
           <div>
             <p className="sectionKicker">Админка</p>
             <h1 id="admin-sorting-title">Сортировка</h1>
-            <p>Ручной порядок категорий и товаров, который используется в клиентском каталоге.</p>
+            <p>Настройте порядок показа товаров. Общий список и категории сохраняются отдельно.</p>
           </div>
           <AdminLogoutButton />
         </header>
@@ -52,7 +52,7 @@ export default async function AdminAllDrinksSortingPage() {
         <SortingCategoryLinks categories={categories} selectedCategoryId="" />
 
         <AdminSortableList
-          description="Перетащите товары в порядке, который клиент увидит в фильтре Все напитки. Этот порядок независим от порядка внутри категорий."
+          description="Перетащите товары в порядке, который клиент увидит в фильтре Все напитки. Этот порядок не меняет порядок внутри отдельных категорий."
           emptyText="Добавьте товары, чтобы настроить порядок в общем фильтре."
           emptyTitle="Товаров пока нет"
           endpoint="/api/admin/products/reorder-all"

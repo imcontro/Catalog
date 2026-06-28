@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { AdminLogoutButton } from "./AdminLogoutButton";
 import { AdminProductQuickActions } from "./AdminProductQuickActions";
 import type {
   AdminProductCategory,
@@ -9,7 +10,7 @@ import type {
 
 type AdminProductsListProps = {
   title: string;
-  description: string;
+  description?: string;
   kind: AdminProductListKind;
   products: AdminProductListItem[];
   categories?: AdminProductCategory[];
@@ -52,7 +53,7 @@ export function AdminProductsList({
         <div>
           <p className="sectionKicker">Управление каталогом</p>
           <h1 id="admin-products-title">{headerTitle}</h1>
-          <p>{description}</p>
+          {description ? <p>{description}</p> : null}
         </div>
         <div className="adminListActions">
           <span className="adminCountBadge">{countLabel}</span>
@@ -61,6 +62,7 @@ export function AdminProductsList({
               Добавить товар
             </Link>
           ) : null}
+          <AdminLogoutButton />
         </div>
       </div>
 
@@ -172,19 +174,21 @@ export function AdminProductsList({
                 <span>{product.hasFlavorChoice ? "Есть вкусы" : "Без вкусов"}</span>
               </div>
 
-              <Link
-                className="adminProductEditLink"
-                href={`/admin/products/${product.id}/edit`}
-              >
-                Редактировать
-              </Link>
+              <div className="adminProductActionStack">
+                <Link
+                  className="adminProductEditLink"
+                  href={`/admin/products/${product.id}/edit`}
+                >
+                  Править
+                </Link>
 
-              <AdminProductQuickActions
-                kind={kind}
-                productId={product.id}
-                productName={capitalizeDisplayName(product.name)}
-                productStatus={product.status}
-              />
+                <AdminProductQuickActions
+                  kind={kind}
+                  productId={product.id}
+                  productName={capitalizeDisplayName(product.name)}
+                  productStatus={product.status}
+                />
+              </div>
             </article>
           ))}
         </div>
