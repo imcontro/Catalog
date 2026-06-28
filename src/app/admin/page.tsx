@@ -38,6 +38,11 @@ export default async function AdminPage() {
             <strong>Убраны от клиентов</strong>
             <p>Товары, которые сохранены в базе, но не показываются в каталоге.</p>
           </Link>
+          <Link className="adminSectionCard" href="/admin/categories">
+            <span>Категории</span>
+            <strong>Разделы каталога</strong>
+            <p>Добавить, переименовать или удалить пустую категорию без изменения товаров.</p>
+          </Link>
         </div>
       </section>
     </main>
