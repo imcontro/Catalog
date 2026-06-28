@@ -49,7 +49,7 @@ export default async function AdminCategorySortingPage({
           <div>
             <p className="sectionKicker">Админка</p>
             <h1 id="admin-sorting-title">Сортировка</h1>
-            <p>Порядок товаров внутри категории настраивается отдельно от Все напитки.</p>
+            <p>Настройте порядок товаров внутри выбранной категории. Это не меняет общий список Все напитки.</p>
           </div>
           <AdminLogoutButton />
         </header>

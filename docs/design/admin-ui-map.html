@@ -1,0 +1,1282 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Графическая карта админки NapitkiBerkat</title>
+    <style>
+      :root {
+        --paper: #f7f4ef;
+        --panel: #fffdfa;
+        --ink: #202020;
+        --muted: #6c655e;
+        --line: #ded7ce;
+        --soft-line: #ebe4da;
+        --accent: #e05f2f;
+        --accent-dark: #b8421e;
+        --green: #27845a;
+        --blue: #315f9f;
+        --yellow: #d89b22;
+        --red: #bd3b33;
+        --shadow: 0 18px 48px rgba(46, 36, 27, 0.12);
+        --radius: 8px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        min-width: 1160px;
+        background:
+          linear-gradient(90deg, rgba(32, 32, 32, 0.035) 1px, transparent 1px),
+          linear-gradient(rgba(32, 32, 32, 0.035) 1px, transparent 1px),
+          var(--paper);
+        background-size: 32px 32px;
+        color: var(--ink);
+        font-family:
+          "Trebuchet MS",
+          "Segoe UI",
+          sans-serif;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        font: inherit;
+      }
+
+      .page {
+        width: 1160px;
+        margin: 0 auto;
+        padding: 28px 28px 72px;
+      }
+
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 24px;
+        align-items: center;
+        margin: -28px -28px 24px;
+        padding: 18px 28px;
+        border-bottom: 1px solid rgba(222, 215, 206, 0.9);
+        background: rgba(247, 244, 239, 0.92);
+        backdrop-filter: blur(14px);
+      }
+
+      .brandline {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .mark {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 900;
+        letter-spacing: 0;
+        box-shadow: 5px 5px 0 var(--ink);
+      }
+
+      .kicker {
+        margin: 0 0 4px;
+        color: var(--accent-dark);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      h1 {
+        font-size: 28px;
+        line-height: 1.08;
+      }
+
+      .topbar p {
+        margin-top: 5px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .nav {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+
+      .nav a,
+      .small-button {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: var(--panel);
+        color: var(--ink);
+        padding: 9px 13px;
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .small-button {
+        cursor: pointer;
+      }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 22px;
+        align-items: stretch;
+        margin-bottom: 22px;
+      }
+
+      .brief {
+        padding: 24px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .brief h2 {
+        margin-bottom: 12px;
+        font-size: 30px;
+        line-height: 1.05;
+      }
+
+      .brief p {
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.55;
+      }
+
+      .brief-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      .metric {
+        min-height: 94px;
+        padding: 13px;
+        border: 1px solid var(--soft-line);
+        border-radius: var(--radius);
+        background: #fbf1e9;
+      }
+
+      .metric strong {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 24px;
+      }
+
+      .metric span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+        line-height: 1.35;
+      }
+
+      [contenteditable="true"] {
+        outline: 1px dashed transparent;
+        outline-offset: 4px;
+      }
+
+      [contenteditable="true"]:focus {
+        outline-color: var(--accent);
+        background: #fff7e8;
+      }
+
+      .map-canvas {
+        position: relative;
+        min-height: 376px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background:
+          radial-gradient(circle at 10% 20%, rgba(224, 95, 47, 0.1), transparent 30%),
+          linear-gradient(135deg, #fffdfa 0%, #f5efe6 100%);
+        box-shadow: var(--shadow);
+      }
+
+      .map-canvas svg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+
+      .node {
+        position: absolute;
+        width: 142px;
+        min-height: 78px;
+        padding: 12px;
+        border: 2px solid var(--ink);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: 5px 5px 0 rgba(32, 32, 32, 0.88);
+      }
+
+      .node strong {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 14px;
+      }
+
+      .node span {
+        display: block;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      .node-login {
+        left: 32px;
+        top: 40px;
+      }
+
+      .node-home {
+        left: 232px;
+        top: 146px;
+        background: #fff5ea;
+      }
+
+      .node-products {
+        left: 430px;
+        top: 40px;
+      }
+
+      .node-form {
+        left: 614px;
+        top: 34px;
+        width: 160px;
+      }
+
+      .node-categories {
+        left: 428px;
+        top: 244px;
+      }
+
+      .node-sort {
+        left: 615px;
+        top: 236px;
+        width: 160px;
+      }
+
+      .node-states {
+        left: 824px;
+        top: 137px;
+        width: 150px;
+        background: #f5fbf7;
+      }
+
+      .section {
+        margin-top: 24px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        align-items: end;
+        margin-bottom: 12px;
+      }
+
+      .section-head h2 {
+        font-size: 22px;
+      }
+
+      .section-head p {
+        max-width: 610px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+
+      .screen-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+      }
+
+      .screen {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .screen-bar {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--soft-line);
+        background: #fbf7f0;
+      }
+
+      .screen-bar strong {
+        font-size: 14px;
+      }
+
+      .screen-bar span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .mock-admin {
+        min-height: 390px;
+        padding: 16px;
+        background: #f6f3ee;
+      }
+
+      .mock-header {
+        display: grid;
+        grid-template-columns: 42px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        margin-bottom: 13px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+      }
+
+      .mock-logo {
+        display: grid;
+        width: 42px;
+        height: 42px;
+        place-items: center;
+        border-radius: 8px;
+        background: var(--ink);
+        color: #fff;
+        font-weight: 900;
+      }
+
+      .mock-header h3 {
+        margin-bottom: 4px;
+        font-size: 19px;
+      }
+
+      .mock-header p {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
+      .ghost-button,
+      .primary-button,
+      .danger-button {
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 9px 12px;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .primary-button {
+        border-color: var(--accent);
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .ghost-button {
+        background: #fff;
+        color: var(--ink);
+      }
+
+      .danger-button {
+        border-color: rgba(189, 59, 51, 0.3);
+        background: #fff5f3;
+        color: var(--red);
+      }
+
+      .admin-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 13px;
+      }
+
+      .admin-tabs span {
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: #fff;
+        padding: 8px 11px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .admin-tabs .active {
+        border-color: var(--accent);
+        background: #ffe9df;
+        color: var(--accent-dark);
+      }
+
+      .list-toolbar {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 13px;
+      }
+
+      .search {
+        min-height: 38px;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        padding: 10px 12px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .row-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .product-row,
+      .category-row,
+      .sort-row {
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 10px;
+        border: 1px solid var(--soft-line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      .product-photo {
+        width: 52px;
+        height: 52px;
+        border-radius: 7px;
+        background:
+          linear-gradient(145deg, rgba(224, 95, 47, 0.22), transparent 60%),
+          #f4eee5;
+        border: 1px solid var(--line);
+      }
+
+      .row-title {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 14px;
+        font-weight: 900;
+      }
+
+      .row-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .pill {
+        border-radius: 999px;
+        background: #f3eee7;
+        color: var(--muted);
+        padding: 4px 7px;
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .pill.green {
+        background: #e9f6ef;
+        color: var(--green);
+      }
+
+      .pill.yellow {
+        background: #fff4d8;
+        color: #8b630f;
+      }
+
+      .pill.blue {
+        background: #edf4ff;
+        color: var(--blue);
+      }
+
+      .pill.red {
+        background: #fff0ee;
+        color: var(--red);
+      }
+
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .dashboard-card {
+        min-height: 112px;
+        padding: 13px;
+        border: 1px solid var(--soft-line);
+        border-radius: var(--radius);
+        background: #fff;
+      }
+
+      .dashboard-card span {
+        display: inline-grid;
+        width: 26px;
+        height: 26px;
+        place-items: center;
+        margin-bottom: 14px;
+        border-radius: 7px;
+        background: #202020;
+        color: #fff;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .dashboard-card strong {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 15px;
+      }
+
+      .dashboard-card p {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .form-layout {
+        display: grid;
+        grid-template-columns: 1fr 190px;
+        gap: 14px;
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 9px;
+      }
+
+      .field,
+      .photo-panel,
+      .flavor-card {
+        border: 1px solid var(--soft-line);
+        border-radius: var(--radius);
+        background: #fff;
+        padding: 11px;
+      }
+
+      .field span,
+      .photo-panel span {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 900;
+      }
+
+      .fake-input {
+        min-height: 34px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fbfaf7;
+        padding: 9px;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .photo-box {
+        display: grid;
+        min-height: 150px;
+        place-items: center;
+        border: 1px dashed #cfc5b8;
+        border-radius: 7px;
+        background: #fbf7f0;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-align: center;
+      }
+
+      .form-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .category-row {
+        grid-template-columns: 38px minmax(0, 1fr) auto;
+      }
+
+      .position {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border-radius: 7px;
+        background: #f3eee7;
+        font-size: 12px;
+        font-weight: 900;
+      }
+
+      .sort-row {
+        grid-template-columns: 42px 42px minmax(0, 1fr) auto;
+      }
+
+      .handle {
+        display: grid;
+        width: 34px;
+        height: 34px;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        background: #fff;
+        color: var(--muted);
+        font-weight: 900;
+      }
+
+      .component-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+
+      .component-card,
+      .note-card {
+        min-height: 160px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+      }
+
+      .component-card h3,
+      .note-card h3 {
+        margin-bottom: 10px;
+        font-size: 15px;
+      }
+
+      .component-card p,
+      .note-card p,
+      .note-card li {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .note-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+
+      .note-card ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .note-card li + li {
+        margin-top: 7px;
+      }
+
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .swatch {
+        min-height: 62px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 8px;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 900;
+      }
+
+      .swatch.light {
+        color: var(--ink);
+      }
+
+      .footer-note {
+        margin-top: 26px;
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: #202020;
+        color: #fff;
+      }
+
+      .footer-note p {
+        max-width: 870px;
+        color: rgba(255, 255, 255, 0.76);
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      @media print {
+        body {
+          min-width: 0;
+          background: #fff;
+        }
+
+        .page {
+          width: auto;
+        }
+
+        .topbar {
+          position: static;
+        }
+
+        .small-button {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="topbar">
+        <div class="brandline">
+          <div class="mark">NB</div>
+          <div>
+            <p class="kicker">Draft design map</p>
+            <h1>Графическая карта админки NapitkiBerkat</h1>
+            <p contenteditable="true">
+              Цель: сделать интерфейс понятным не только владельцу, но и любому человеку,
+              который помогает управлять каталогом.
+            </p>
+          </div>
+        </div>
+        <nav class="nav" aria-label="Навигация по карте">
+          <a href="#flow">Карта</a>
+          <a href="#screens">Экраны</a>
+          <a href="#components">Компоненты</a>
+          <a href="#rules">Правила</a>
+          <button class="small-button" type="button" onclick="window.print()">Печать / PDF</button>
+        </nav>
+      </header>
+
+      <section class="hero">
+        <div class="brief">
+          <p class="kicker">UX направление</p>
+          <h2 contenteditable="true">Спокойная рабочая панель вместо витрины товаров</h2>
+          <p contenteditable="true">
+            Админка должна объяснять следующий шаг: где добавить товар, где найти черновики,
+            где скрытые позиции, где категории и где сортировка. Главный принцип черновика -
+            не прятать действия в догадках и не заставлять помнить внутреннюю логику проекта.
+          </p>
+          <div class="brief-grid">
+            <div class="metric">
+              <strong>7</strong>
+              <span>основных экранов админки в первой версии</span>
+            </div>
+            <div class="metric">
+              <strong>4</strong>
+              <span>статуса товара должны читаться сразу</span>
+            </div>
+            <div class="metric">
+              <strong>1</strong>
+              <span>общий стиль для списков, форм и сортировки</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-canvas" id="flow" aria-label="Карта переходов админки">
+          <svg viewBox="0 0 1000 376" aria-hidden="true">
+            <path d="M174 82 C230 90 222 144 232 166" fill="none" stroke="#202020" stroke-width="2" />
+            <path d="M374 170 C408 120 406 92 430 80" fill="none" stroke="#202020" stroke-width="2" />
+            <path d="M572 80 L614 75" fill="none" stroke="#202020" stroke-width="2" />
+            <path d="M374 190 C406 232 404 274 428 282" fill="none" stroke="#202020" stroke-width="2" />
+            <path d="M570 282 L615 276" fill="none" stroke="#202020" stroke-width="2" />
+            <path d="M774 78 C826 98 805 134 824 166" fill="none" stroke="#202020" stroke-width="2" />
+            <path d="M775 274 C827 252 805 216 824 190" fill="none" stroke="#202020" stroke-width="2" />
+          </svg>
+          <div class="node node-login">
+            <strong contenteditable="true">Вход</strong>
+            <span contenteditable="true">Логин, пароль, общая ошибка, переход в админку</span>
+          </div>
+          <div class="node node-home">
+            <strong contenteditable="true">Главная</strong>
+            <span contenteditable="true">Пять понятных входов: товары, черновики, скрытые, категории, сортировка</span>
+          </div>
+          <div class="node node-products">
+            <strong contenteditable="true">Товары</strong>
+            <span contenteditable="true">Поиск, фильтры, статусы, быстрые действия</span>
+          </div>
+          <div class="node node-form">
+            <strong contenteditable="true">Форма товара</strong>
+            <span contenteditable="true">Название, цена, фото, категория, упаковка, вкусы</span>
+          </div>
+          <div class="node node-categories">
+            <strong contenteditable="true">Категории</strong>
+            <span contenteditable="true">Создать, переименовать, удалить пустую, изменить порядок</span>
+          </div>
+          <div class="node node-sort">
+            <strong contenteditable="true">Сортировка</strong>
+            <span contenteditable="true">Все напитки и отдельные категории через перетаскивание</span>
+          </div>
+          <div class="node node-states">
+            <strong contenteditable="true">Состояния</strong>
+            <span contenteditable="true">Черновик, скрыт, нет в наличии, ошибка, пустой список</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="screens">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Основные экраны</p>
+            <h2>Черновой вид админки</h2>
+          </div>
+          <p contenteditable="true">
+            Эти блоки не являются финальным кодом. Они показывают структуру, текстовые акценты
+            и расположение действий, которые можно утвердить перед следующим work plan.
+          </p>
+        </div>
+
+        <div class="screen-grid">
+          <article class="screen">
+            <div class="screen-bar">
+              <strong>/admin</strong>
+              <span>Главная панель</span>
+            </div>
+            <div class="mock-admin">
+              <div class="mock-header">
+                <div class="mock-logo">NB</div>
+                <div>
+                  <h3 contenteditable="true">Управление каталогом</h3>
+                  <p contenteditable="true">Выберите раздел, чтобы изменить товары, категории или порядок показа.</p>
+                </div>
+                <button class="ghost-button" type="button">Выйти</button>
+              </div>
+              <div class="dashboard-grid">
+                <div class="dashboard-card">
+                  <span>01</span>
+                  <strong contenteditable="true">Товары</strong>
+                  <p contenteditable="true">Активные позиции и товары, которые временно закончились.</p>
+                </div>
+                <div class="dashboard-card">
+                  <span>02</span>
+                  <strong contenteditable="true">Черновики</strong>
+                  <p contenteditable="true">Незаполненные товары, которые клиент пока не видит.</p>
+                </div>
+                <div class="dashboard-card">
+                  <span>03</span>
+                  <strong contenteditable="true">Скрытые</strong>
+                  <p contenteditable="true">Позиции, убранные из клиентского каталога.</p>
+                </div>
+                <div class="dashboard-card">
+                  <span>04</span>
+                  <strong contenteditable="true">Категории</strong>
+                  <p contenteditable="true">Разделы каталога и их порядок.</p>
+                </div>
+                <div class="dashboard-card">
+                  <span>05</span>
+                  <strong contenteditable="true">Сортировка</strong>
+                  <p contenteditable="true">Порядок товаров в "Все напитки" и внутри категорий.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="screen">
+            <div class="screen-bar">
+              <strong>/admin/products</strong>
+              <span>Список товаров</span>
+            </div>
+            <div class="mock-admin">
+              <div class="mock-header">
+                <div class="mock-logo">NB</div>
+                <div>
+                  <h3 contenteditable="true">Товары</h3>
+                  <p contenteditable="true">Найдите товар, измените цену, фото, статус или вкусы.</p>
+                </div>
+                <button class="primary-button" type="button">Добавить товар</button>
+              </div>
+              <div class="admin-tabs">
+                <span class="active">Товары</span>
+                <span>Черновики</span>
+                <span>Скрытые</span>
+                <span>Категории</span>
+                <span>Сортировка</span>
+              </div>
+              <div class="list-toolbar">
+                <div class="search" contenteditable="true">Поиск по названию товара</div>
+                <span class="pill blue">128 позиций</span>
+              </div>
+              <div class="row-list">
+                <div class="product-row">
+                  <div class="product-photo"></div>
+                  <div>
+                    <span class="row-title" contenteditable="true">Добрый Cola ж/б 0.33л</span>
+                    <div class="row-meta">
+                      <span class="pill">Газировки</span>
+                      <span class="pill">1 320 ₽</span>
+                      <span class="pill">24 шт в уп</span>
+                      <span class="pill green">Доступен</span>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="ghost-button" type="button">Редактировать</button>
+                    <button class="danger-button" type="button">Нет в наличии</button>
+                  </div>
+                </div>
+                <div class="product-row">
+                  <div class="product-photo"></div>
+                  <div>
+                    <span class="row-title" contenteditable="true">Lipton зеленый чай 0.5л</span>
+                    <div class="row-meta">
+                      <span class="pill">Чай</span>
+                      <span class="pill">960 ₽</span>
+                      <span class="pill yellow">Есть вкусы</span>
+                      <span class="pill red">Нет в наличии</span>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="ghost-button" type="button">Редактировать</button>
+                    <button class="ghost-button" type="button">Вернуть</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="screen">
+            <div class="screen-bar">
+              <strong>/admin/products/new</strong>
+              <span>Форма товара</span>
+            </div>
+            <div class="mock-admin">
+              <div class="mock-header">
+                <div class="mock-logo">NB</div>
+                <div>
+                  <h3 contenteditable="true">Новый товар</h3>
+                  <p contenteditable="true">Заполните обязательные данные, чтобы товар появился в каталоге.</p>
+                </div>
+                <button class="ghost-button" type="button">Назад</button>
+              </div>
+              <div class="form-layout">
+                <div class="field-grid">
+                  <div class="field">
+                    <span>Название товара</span>
+                    <div class="fake-input" contenteditable="true">Кока-Кола ж/б 0.33л</div>
+                  </div>
+                  <div class="field">
+                    <span>Цена и упаковка</span>
+                    <div class="fake-input" contenteditable="true">1 320 ₽ за уп · 24 шт в уп</div>
+                  </div>
+                  <div class="field">
+                    <span>Категория и статус</span>
+                    <div class="fake-input" contenteditable="true">Газировки · Доступен для заказа</div>
+                  </div>
+                  <div class="flavor-card">
+                    <span class="row-title" contenteditable="true">Вкусы товара</span>
+                    <div class="row-meta">
+                      <span class="pill yellow">Можно отключить</span>
+                      <span class="pill">Цена вкуса необязательна</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="photo-panel">
+                  <span>Фото товара</span>
+                  <div class="photo-box" contenteditable="true">Загрузить JPG, PNG или WebP</div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="primary-button" type="button">Сохранить товар</button>
+                <button class="ghost-button" type="button">Сохранить как черновик</button>
+                <button class="danger-button" type="button">Удалить</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="screen">
+            <div class="screen-bar">
+              <strong>/admin/categories</strong>
+              <span>Категории</span>
+            </div>
+            <div class="mock-admin">
+              <div class="mock-header">
+                <div class="mock-logo">NB</div>
+                <div>
+                  <h3 contenteditable="true">Категории</h3>
+                  <p contenteditable="true">Управляйте разделами, которые видит клиент в каталоге.</p>
+                </div>
+                <button class="ghost-button" type="button">Выйти</button>
+              </div>
+              <div class="field" style="margin-bottom: 12px">
+                <span>Добавить категорию</span>
+                <div class="fake-input" contenteditable="true">Название новой категории</div>
+              </div>
+              <div class="row-list">
+                <div class="category-row">
+                  <div class="position">01</div>
+                  <div>
+                    <span class="row-title" contenteditable="true">Газировки</span>
+                    <div class="row-meta">
+                      <span class="pill">32 товара</span>
+                      <span class="pill blue">Можно переименовать</span>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="ghost-button" type="button">Изменить</button>
+                    <button class="danger-button" type="button">Удалить</button>
+                  </div>
+                </div>
+                <div class="category-row">
+                  <div class="position">02</div>
+                  <div>
+                    <span class="row-title" contenteditable="true">Энергетики</span>
+                    <div class="row-meta">
+                      <span class="pill">18 товаров</span>
+                      <span class="pill yellow">Удаление недоступно</span>
+                    </div>
+                  </div>
+                  <div class="actions">
+                    <button class="ghost-button" type="button">Изменить</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="screen">
+            <div class="screen-bar">
+              <strong>/admin/sorting/all</strong>
+              <span>Сортировка товаров</span>
+            </div>
+            <div class="mock-admin">
+              <div class="mock-header">
+                <div class="mock-logo">NB</div>
+                <div>
+                  <h3 contenteditable="true">Сортировка</h3>
+                  <p contenteditable="true">Перетащите товары в том порядке, как они должны идти у клиента.</p>
+                </div>
+                <button class="primary-button" type="button">Сохранить порядок</button>
+              </div>
+              <div class="admin-tabs">
+                <span>Категории</span>
+                <span class="active">Все напитки</span>
+                <span>Газировки</span>
+                <span>Чай</span>
+                <span>Энергетики</span>
+              </div>
+              <div class="row-list">
+                <div class="sort-row">
+                  <div class="handle">↕</div>
+                  <div class="position">01</div>
+                  <div>
+                    <span class="row-title" contenteditable="true">Добрый Cola ж/б 0.33л</span>
+                    <div class="row-meta">
+                      <span class="pill">Газировки</span>
+                      <span class="pill green">Вверху каталога</span>
+                    </div>
+                  </div>
+                  <button class="ghost-button" type="button">Переместить</button>
+                </div>
+                <div class="sort-row">
+                  <div class="handle">↕</div>
+                  <div class="position">02</div>
+                  <div>
+                    <span class="row-title" contenteditable="true">Flash Energy 0.45л</span>
+                    <div class="row-meta">
+                      <span class="pill">Энергетики</span>
+                      <span class="pill">24 шт в уп</span>
+                    </div>
+                  </div>
+                  <button class="ghost-button" type="button">Переместить</button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="screen">
+            <div class="screen-bar">
+              <strong>Состояния</strong>
+              <span>Ошибки и пустые экраны</span>
+            </div>
+            <div class="mock-admin">
+              <div class="mock-header">
+                <div class="mock-logo">NB</div>
+                <div>
+                  <h3 contenteditable="true">Понятные состояния</h3>
+                  <p contenteditable="true">Каждый пустой или ошибочный экран должен говорить, что делать дальше.</p>
+                </div>
+                <button class="ghost-button" type="button">Назад</button>
+              </div>
+              <div class="row-list">
+                <div class="field">
+                  <span class="row-title" contenteditable="true">Поиск ничего не нашел</span>
+                  <p contenteditable="true">Проверьте название или очистите поиск, чтобы увидеть все товары.</p>
+                </div>
+                <div class="field">
+                  <span class="row-title" contenteditable="true">Нельзя удалить категорию</span>
+                  <p contenteditable="true">В категории есть товары. Сначала перенесите их или удалите.</p>
+                </div>
+                <div class="field">
+                  <span class="row-title" contenteditable="true">Товар сохранен как черновик</span>
+                  <p contenteditable="true">Клиент не увидит товар, пока не будут заполнены фото, цена и упаковка.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="components">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Компоненты</p>
+            <h2>Библиотека рабочих элементов</h2>
+          </div>
+          <p contenteditable="true">
+            Компоненты должны повторяться на всех страницах админки, чтобы пользователь не
+            учился заново на каждом разделе.
+          </p>
+        </div>
+
+        <div class="component-grid">
+          <div class="component-card">
+            <h3 contenteditable="true">Шапка раздела</h3>
+            <p contenteditable="true">Название, короткое объяснение, главное действие и выход из админки.</p>
+            <div class="row-meta" style="margin-top: 12px">
+              <span class="pill blue">Объясняет раздел</span>
+              <span class="pill">1 главное действие</span>
+            </div>
+          </div>
+          <div class="component-card">
+            <h3 contenteditable="true">Строка товара</h3>
+            <p contenteditable="true">Фото, название, категория, цена, упаковка, статус и быстрые действия.</p>
+            <div class="row-meta" style="margin-top: 12px">
+              <span class="pill green">Доступен</span>
+              <span class="pill red">Нет в наличии</span>
+            </div>
+          </div>
+          <div class="component-card">
+            <h3 contenteditable="true">Форма</h3>
+            <p contenteditable="true">Поля сгруппированы по смыслу: товар, цена, фото, вкусы, статус.</p>
+            <div class="row-meta" style="margin-top: 12px">
+              <span class="pill yellow">Черновик</span>
+              <span class="pill">Публикация</span>
+            </div>
+          </div>
+          <div class="component-card">
+            <h3 contenteditable="true">Подтверждение</h3>
+            <p contenteditable="true">Скрытие и удаление не выполняются без понятного подтверждения.</p>
+            <div class="row-meta" style="margin-top: 12px">
+              <span class="pill red">Опасное действие</span>
+              <span class="pill">Отмена рядом</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="rules">
+        <div class="section-head">
+          <div>
+            <p class="kicker">Правила понятности</p>
+            <h2>Что нужно утвердить перед редизайном</h2>
+          </div>
+          <p contenteditable="true">
+            Этот список можно править прямо на странице. После утверждения решения переносятся
+            в design spec и отдельный work plan.
+          </p>
+        </div>
+
+        <div class="note-grid">
+          <div class="note-card">
+            <h3 contenteditable="true">Навигация</h3>
+            <ul contenteditable="true">
+              <li>Главная админки объясняет все разделы простыми словами.</li>
+              <li>Вкладки одинаковые на списках товаров, категорий и сортировки.</li>
+              <li>Кнопка выхода остается доступной, но не конкурирует с рабочими действиями.</li>
+            </ul>
+          </div>
+          <div class="note-card">
+            <h3 contenteditable="true">Тексты</h3>
+            <ul contenteditable="true">
+              <li>Каждый раздел говорит, для чего он нужен.</li>
+              <li>Ошибки объясняют причину и следующий шаг.</li>
+              <li>Слова "черновик", "скрыт", "нет в наличии" используются одинаково везде.</li>
+            </ul>
+          </div>
+          <div class="note-card">
+            <h3 contenteditable="true">Визуальная иерархия</h3>
+            <ul contenteditable="true">
+              <li>Главное действие выделено одним акцентом.</li>
+              <li>Опасные действия отделены цветом и подтверждением.</li>
+              <li>Списки плотные, но фото, цена и статус читаются без напряжения.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section" style="margin-top: 18px">
+          <div class="section-head">
+            <div>
+              <p class="kicker">Палитра</p>
+              <h2>Черновые дизайн-токены</h2>
+            </div>
+            <p contenteditable="true">
+              Палитра спокойная и рабочая: теплый фон, графитовый текст, фирменный оранжево-коралловый
+              акцент и отдельные цвета для статусов.
+            </p>
+          </div>
+          <div class="swatches">
+            <div class="swatch light" style="background: #f7f4ef">Фон<br />#f7f4ef</div>
+            <div class="swatch light" style="background: #fffdfa">Панель<br />#fffdfa</div>
+            <div class="swatch" style="background: #202020">Текст<br />#202020</div>
+            <div class="swatch" style="background: #e05f2f">Акцент<br />#e05f2f</div>
+            <div class="swatch" style="background: #27845a">Доступен<br />#27845a</div>
+            <div class="swatch" style="background: #315f9f">Инфо<br />#315f9f</div>
+            <div class="swatch" style="background: #d89b22">Черновик<br />#d89b22</div>
+            <div class="swatch" style="background: #bd3b33">Опасно<br />#bd3b33</div>
+            <div class="swatch light" style="background: #ded7ce">Граница<br />#ded7ce</div>
+            <div class="swatch light" style="background: #fbf1e9">Подложка<br />#fbf1e9</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer-note">
+        <p contenteditable="true">
+          Статус страницы: дизайн-направление утверждено владельцем для следующего work plan по UI/UX админки.
+          Страница не меняет рабочую админку, не подключается к Supabase и не заменяет work plan. Следующий шаг -
+          создать план переноса выбранных решений в реальные страницы `/admin`.
+        </p>
+      </footer>
+    </div>
+  </body>
+</html>

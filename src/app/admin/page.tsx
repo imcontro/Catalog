@@ -17,36 +17,36 @@ export default async function AdminPage() {
           <div>
             <p className="sectionKicker">Админка</p>
             <h1 id="admin-title">Управление каталогом</h1>
-            <p>Выберите раздел для работы с товарами каталога.</p>
+            <p>Быстрый вход в товары, черновики, скрытые позиции, категории и сортировку.</p>
           </div>
           <AdminLogoutButton />
         </header>
 
         <div className="adminSectionGrid">
           <Link className="adminSectionCard" href="/admin/products">
-            <span>Товары</span>
-            <strong>Активные и нет в наличии</strong>
-            <p>Обычный список товаров, которые видны владельцу для контроля каталога.</p>
+            <span>01</span>
+            <strong>Товары</strong>
+            <p>Активные товары и позиции нет в наличии.</p>
           </Link>
           <Link className="adminSectionCard" href="/admin/drafts">
-            <span>Черновики</span>
-            <strong>Незаполненные товары</strong>
-            <p>Товары, которым не хватает данных для клиентского каталога.</p>
+            <span>02</span>
+            <strong>Черновики</strong>
+            <p>Товары без обязательных данных для каталога.</p>
           </Link>
           <Link className="adminSectionCard" href="/admin/hidden">
-            <span>Скрытые</span>
-            <strong>Убраны от клиентов</strong>
-            <p>Товары, которые сохранены в базе, но не показываются в каталоге.</p>
+            <span>03</span>
+            <strong>Скрытые</strong>
+            <p>Позиции, которые клиент сейчас не видит.</p>
           </Link>
           <Link className="adminSectionCard" href="/admin/categories">
-            <span>Категории</span>
-            <strong>Разделы каталога</strong>
-            <p>Добавить, переименовать или удалить пустую категорию без изменения товаров.</p>
+            <span>04</span>
+            <strong>Категории</strong>
+            <p>Разделы каталога и порядок их показа.</p>
           </Link>
           <Link className="adminSectionCard" href="/admin/sorting/all">
-            <span>Сортировка</span>
-            <strong>Порядок показа</strong>
-            <p>Переставить категории и товары в порядке, который увидит клиент.</p>
+            <span>05</span>
+            <strong>Сортировка</strong>
+            <p>Порядок товаров во всех напитках и категориях.</p>
           </Link>
         </div>
       </section>

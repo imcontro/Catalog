@@ -22,7 +22,7 @@ export default async function AdminCategoriesPage() {
           <div>
             <p className="sectionKicker">Админка</p>
             <h1 id="admin-categories-title">Категории</h1>
-            <p>Управление разделами каталога, которые клиент видит после фильтра Все напитки.</p>
+            <p>Разделы клиентского каталога: создать, переименовать, удалить пустую категорию и настроить порядок.</p>
           </div>
           <AdminLogoutButton />
         </header>
@@ -40,7 +40,7 @@ export default async function AdminCategoriesPage() {
         <AdminCategoriesManager categories={categories} />
 
         <AdminSortableList
-          description="Перетащите реальные категории в нужном порядке. Все напитки остается системным фильтром и всегда показывается первым."
+          description="Перетащите реальные категории в нужном порядке. Все напитки остается системным фильтром, не редактируется и всегда показывается первым."
           emptyText="Добавьте категории, чтобы настроить их порядок в клиентском каталоге."
           emptyTitle="Категорий пока нет"
           endpoint="/api/admin/categories/reorder"

@@ -6,6 +6,37 @@
 
 ## Записи
 
+### 2026-06-28 - UI/UX редизайн админки
+
+- Work plan: `docs/work-plans/completed/2026-06-28-admin-ui-ux-redesign.work-plan.md`
+- Ветка: `feature/admin-ui-ux-redesign`
+- Pull Request:
+- Области: admin, frontend, design
+
+Сделано:
+
+- Утвержденная графическая карта админки перенесена в рабочие страницы `/admin`.
+- Desktop-админка приведена к направлению `docs/design/admin-paper-artboards.html`: рабочий board шириной 1080px, верхняя шапка, левое меню, карточки товаров, toolbar с поиском и действиями.
+- Телефонная версия админки использует компактные списки, горизонтальную навигацию и крупные основные действия.
+- Обновлены `/admin/login`, `/admin`, `/admin/products`, `/admin/drafts`, `/admin/hidden`, `/admin/products/new`, `/admin/products/[id]/edit`, `/admin/categories`, `/admin/sorting/all` и `/admin/sorting/category/[id]`.
+- Форма товара сгруппирована по смыслу: основные данные, цена и упаковка, статус, фото и вкусы.
+- Статусы, опасные действия, пустые состояния и ошибочные состояния приведены к единому визуальному стилю.
+- Бизнес-логика, API, схема базы данных, Supabase Storage, клиентский каталог, корзина и WhatsApp-сообщение не менялись.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Ручная проверка владельцем.
+- Владелец утвердил дизайн и попросил сделать push.
+
+Заметки:
+
+- UI админки перенесен по утвержденному design artifact без добавления новых функций управления каталогом.
+- Pull Request и merge владелец делает сам на GitHub.
+
 ### 2026-06-28 - Клиентский каталог: цена за штуку и desktop-прокрутка категорий
 
 - Work plan: `docs/work-plans/completed/2026-06-28-client-catalog-unit-price-and-desktop-categories.work-plan.md`

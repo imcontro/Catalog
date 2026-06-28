@@ -151,6 +151,9 @@ export function AdminSortableList({
           <p className="sectionKicker">Ручная сортировка</p>
           <h2 id="admin-sort-title">{title}</h2>
           <p>{description}</p>
+          <p className="adminSortHint">
+            Можно перетаскивать строки мышью или менять порядок кнопками Вверх и Вниз.
+          </p>
         </div>
         <button
           disabled={!hasChanges || isSaving}

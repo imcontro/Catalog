@@ -1,5 +1,3 @@
-import { BrandLogo } from "@/components/BrandLogo";
-import { AdminLogoutButton } from "@/components/admin/AdminLogoutButton";
 import { AdminProductsList } from "@/components/admin/AdminProductsList";
 import { requireAdminSession } from "@/server/admin/session";
 import {
@@ -37,19 +35,9 @@ export default async function AdminProductsPage({
   return (
     <main className="adminPage">
       <section className="adminShell" aria-labelledby="admin-products-title">
-        <header className="adminHeader">
-          <BrandLogo compact />
-          <div>
-            <p className="sectionKicker">Админка</p>
-            <h1>Товары</h1>
-            <p>Список активных товаров и товаров со статусом нет в наличии.</p>
-          </div>
-          <AdminLogoutButton />
-        </header>
-
         <AdminProductsList
           categories={categories}
-          description="Скрытые товары и черновики не входят в этот список."
+          description="Найдите товар, измените цену, фото, вкусы, категорию или статус."
           kind="products"
           products={products}
           selectedCategoryId={selectedCategoryId}

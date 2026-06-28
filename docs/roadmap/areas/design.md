@@ -4,6 +4,33 @@
 
 ## Записи
 
+### 2026-06-28 - Админка: утвержденный Paper-дизайн и перенос в UI
+
+- Work plan: `docs/work-plans/completed/2026-06-28-admin-ui-ux-redesign.work-plan.md`
+- Ветка: `feature/admin-ui-ux-redesign`
+- Pull Request:
+
+Сделано:
+
+- Подготовлены design artifacts для админки: `docs/design/admin-ui-map.html` и `docs/design/admin-paper-artboards.html`.
+- В design spec зафиксировано направление админки как спокойного рабочего интерфейса для desktop и телефона.
+- Утвержденный владельцем Paper-дизайн перенесен в рабочие страницы админки.
+- Desktop-вид следует artboard с рабочей областью 1080px, левым меню, карточками товаров, toolbar, поиском и действиями.
+- Phone-вид следует компактному artboard с верхней навигацией, списками и крупными действиями.
+- Цвета, статусы, предупреждения, пустые состояния и формы приведены к единому визуальному подходу админки.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Владелец утвердил дизайн.
+
+Заметки:
+
+- Design artifacts оставлены в `docs/design/` как источник сравнения для будущих правок админки.
+
 ### 2026-06-18 - Редизайн клиентского интерфейса
 
 - Work plans:

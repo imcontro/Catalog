@@ -20,7 +20,7 @@ const actionLabels: Record<ProductAction, string> = {
   markOutOfStock: "Нет в наличии",
   markActive: "В наличие",
   hide: "Скрыть",
-  restore: "Вернуть в каталог",
+  restore: "Вернуть",
   delete: "Удалить"
 };
 
