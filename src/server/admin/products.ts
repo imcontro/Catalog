@@ -25,6 +25,16 @@ export type AdminProductListItem = {
   categorySortOrder: number;
 };
 
+export type AdminSortableProductItem = {
+  id: string;
+  name: string;
+  categoryId: string | null;
+  categoryName: string | null;
+  imageUrl: string | null;
+  status: AdminProductStatus;
+  sortOrder: number;
+};
+
 export type AdminProductEditItem = AdminProductListItem & {
   mainImageId: string | null;
   flavors: AdminProductFlavorItem[];
@@ -190,6 +200,62 @@ export async function getAdminProductCategories(): Promise<AdminProductCategory[
       })
       .from(categories)
       .orderBy(asc(categories.sortOrder), asc(categories.name));
+
+    return rows;
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function getAdminProductsForAllDrinksSorting(): Promise<
+  AdminSortableProductItem[]
+> {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const rows = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        categoryId: products.categoryId,
+        categoryName: categories.name,
+        imageUrl: images.publicUrl,
+        status: products.status,
+        sortOrder: products.allDrinksSortOrder
+      })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .leftJoin(images, eq(products.mainImageId, images.id))
+      .where(isNull(products.deletedAt))
+      .orderBy(asc(products.allDrinksSortOrder), asc(products.name));
+
+    return rows;
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function getAdminProductsForCategorySorting(
+  categoryId: string
+): Promise<AdminSortableProductItem[]> {
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    const rows = await db
+      .select({
+        id: products.id,
+        name: products.name,
+        categoryId: products.categoryId,
+        categoryName: categories.name,
+        imageUrl: images.publicUrl,
+        status: products.status,
+        sortOrder: products.categorySortOrder
+      })
+      .from(products)
+      .leftJoin(categories, eq(products.categoryId, categories.id))
+      .leftJoin(images, eq(products.mainImageId, images.id))
+      .where(and(isNull(products.deletedAt), eq(products.categoryId, categoryId)))
+      .orderBy(asc(products.categorySortOrder), asc(products.name));
 
     return rows;
   } finally {
@@ -556,6 +622,109 @@ export async function deleteAdminProduct(id: string) {
   }
 }
 
+export async function reorderAdminProductsInAllDrinks(input: { ids: string[] }) {
+  const ids = normalizeReorderIds(input.ids);
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    return await db.transaction(async (tx) => {
+      const currentProducts = await tx
+        .select({
+          id: products.id
+        })
+        .from(products)
+        .where(isNull(products.deletedAt))
+        .orderBy(asc(products.allDrinksSortOrder), asc(products.name));
+
+      validateCompleteProductReorderList({
+        submittedIds: ids,
+        currentIds: currentProducts.map((product) => product.id),
+        emptyMessage: "Нет товаров для сортировки.",
+        mismatchMessage: "Список товаров изменился. Обновите страницу и попробуйте еще раз."
+      });
+
+      await Promise.all(
+        ids.map((id, index) =>
+          tx
+            .update(products)
+            .set({
+              allDrinksSortOrder: index,
+              updatedAt: new Date()
+            })
+            .where(eq(products.id, id))
+        )
+      );
+
+      return {
+        count: ids.length
+      };
+    });
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
+export async function reorderAdminProductsInCategory({
+  categoryId,
+  ids
+}: {
+  categoryId: string;
+  ids: string[];
+}) {
+  const normalizedIds = normalizeReorderIds(ids);
+  const { db, queryClient } = createDatabaseConnection();
+
+  try {
+    return await db.transaction(async (tx) => {
+      const [category] = await tx
+        .select({
+          id: categories.id
+        })
+        .from(categories)
+        .where(eq(categories.id, categoryId))
+        .limit(1);
+
+      if (!category) {
+        throw new AdminProductMutationError("Категория не найдена.", 404);
+      }
+
+      const currentProducts = await tx
+        .select({
+          id: products.id
+        })
+        .from(products)
+        .where(and(isNull(products.deletedAt), eq(products.categoryId, categoryId)))
+        .orderBy(asc(products.categorySortOrder), asc(products.name));
+
+      validateCompleteProductReorderList({
+        submittedIds: normalizedIds,
+        currentIds: currentProducts.map((product) => product.id),
+        emptyMessage: "В этой категории нет товаров для сортировки.",
+        mismatchMessage:
+          "Список товаров в категории изменился. Обновите страницу и попробуйте еще раз."
+      });
+
+      await Promise.all(
+        normalizedIds.map((id, index) =>
+          tx
+            .update(products)
+            .set({
+              categorySortOrder: index,
+              updatedAt: new Date()
+            })
+            .where(and(eq(products.id, id), eq(products.categoryId, categoryId)))
+        )
+      );
+
+      return {
+        count: normalizedIds.length
+      };
+    });
+  } finally {
+    await queryClient.end({ timeout: 5 });
+  }
+}
+
 export function normalizeAdminProductSearch(value: string | string[] | undefined) {
   const rawValue = Array.isArray(value) ? value[0] : value;
 
@@ -609,6 +778,51 @@ function normalizeSearch(value: string | undefined) {
   }
 
   return value.trim().slice(0, MAX_SEARCH_LENGTH);
+}
+
+function normalizeReorderIds(value: string[]) {
+  const ids = value
+    .filter((id): id is string => typeof id === "string")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  const uniqueIds = new Set(ids);
+
+  if (ids.length === 0) {
+    throw new AdminProductMutationError("Нет элементов для сохранения порядка.");
+  }
+
+  if (uniqueIds.size !== ids.length) {
+    throw new AdminProductMutationError("В списке сортировки есть повторяющиеся элементы.");
+  }
+
+  return ids;
+}
+
+function validateCompleteProductReorderList({
+  submittedIds,
+  currentIds,
+  emptyMessage,
+  mismatchMessage
+}: {
+  submittedIds: string[];
+  currentIds: string[];
+  emptyMessage: string;
+  mismatchMessage: string;
+}) {
+  if (currentIds.length === 0) {
+    throw new AdminProductMutationError(emptyMessage, 409);
+  }
+
+  if (submittedIds.length !== currentIds.length) {
+    throw new AdminProductMutationError(mismatchMessage, 409);
+  }
+
+  const currentIdSet = new Set(currentIds);
+  const unknownId = submittedIds.find((id) => !currentIdSet.has(id));
+
+  if (unknownId) {
+    throw new AdminProductMutationError(mismatchMessage, 409);
+  }
 }
 
 function normalizeMutationInput(input: AdminProductMutationInput) {

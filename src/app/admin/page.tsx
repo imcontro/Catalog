@@ -43,6 +43,11 @@ export default async function AdminPage() {
             <strong>Разделы каталога</strong>
             <p>Добавить, переименовать или удалить пустую категорию без изменения товаров.</p>
           </Link>
+          <Link className="adminSectionCard" href="/admin/sorting/all">
+            <span>Сортировка</span>
+            <strong>Порядок показа</strong>
+            <p>Переставить категории и товары в порядке, который увидит клиент.</p>
+          </Link>
         </div>
       </section>
     </main>

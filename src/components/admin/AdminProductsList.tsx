@@ -77,6 +77,9 @@ export function AdminProductsList({
         <Link href="/admin/categories">
           Категории
         </Link>
+        <Link href="/admin/sorting/all">
+          Сортировка
+        </Link>
       </nav>
 
       {showCategories ? (
