@@ -3716,6 +3716,188 @@ textarea:focus-visible {
   line-height: 1.35;
 }
 
+.adminFormSuccess {
+  border: 1px solid rgba(19, 127, 117, 0.24);
+  border-radius: 8px;
+  margin: 0;
+  padding: 10px 12px;
+  background: rgba(19, 127, 117, 0.08);
+  color: var(--teal);
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.adminCategoriesManager {
+  display: grid;
+  gap: 14px;
+}
+
+.adminCategoryCreateForm {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.adminCategoryCreateForm label,
+.adminCategoryEditForm label {
+  display: grid;
+  gap: 7px;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.adminCategoryCreateForm label span,
+.adminCategoryEditForm label span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.adminCategoryCreateForm input,
+.adminCategoryEditForm input {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px 11px;
+  background: #f8faf9;
+  color: var(--ink);
+}
+
+.adminCategoryCreateForm button,
+.adminCategoryActions button {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 14px;
+  background: #f8faf9;
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.adminCategoryCreateForm button {
+  border: 0;
+  background: var(--accent);
+  color: #fffaf4;
+}
+
+.adminCategoryCreateForm button:disabled,
+.adminCategoryActions button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.adminCategorySystemNote {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  border: 1px solid rgba(19, 127, 117, 0.2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: rgba(19, 127, 117, 0.07);
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.adminCategorySystemNote strong {
+  color: var(--teal);
+}
+
+.adminCategoryListHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: var(--surface);
+  box-shadow: 0 8px 18px rgba(24, 21, 19, 0.04);
+}
+
+.adminCategoryListHeader h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1.3rem;
+  line-height: 1.2;
+}
+
+.adminCategoryList {
+  display: grid;
+  gap: 10px;
+}
+
+.adminCategoryRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--surface);
+  box-shadow: 0 8px 18px rgba(24, 21, 19, 0.04);
+}
+
+.adminCategoryPosition {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--charcoal);
+  color: #fffaf4;
+  font-weight: 900;
+}
+
+.adminCategoryMain {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.adminCategoryMain h3 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.adminCategoryMain p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.adminCategoryEditForm {
+  display: grid;
+  grid-column: 2 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.adminCategoryActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.adminCategoryDangerButton {
+  border-color: rgba(217, 75, 49, 0.32) !important;
+  background: rgba(217, 75, 49, 0.08) !important;
+  color: var(--accent-dark) !important;
+}
+
 .adminProductFormActions {
   display: flex;
   flex-wrap: wrap;
@@ -3902,6 +4084,34 @@ textarea:focus-visible {
   .adminResetSearch {
     width: 100%;
     min-height: 44px;
+  }
+
+  .adminCategoryCreateForm,
+  .adminCategoryEditForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminCategoryListHeader {
+    align-items: flex-start;
+    padding: 14px;
+  }
+
+  .adminCategoryRow {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .adminCategoryActions {
+    grid-column: 1 / -1;
+    justify-content: stretch;
+  }
+
+  .adminCategoryActions button {
+    flex: 1 1 140px;
+  }
+
+  .adminCategoryEditForm {
+    grid-column: 1 / -1;
   }
 
   .topBar {

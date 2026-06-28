@@ -74,6 +74,9 @@ export function AdminProductsList({
         <Link className={kind === "hidden" ? "adminTabActive" : ""} href="/admin/hidden">
           Скрытые
         </Link>
+        <Link href="/admin/categories">
+          Категории
+        </Link>
       </nav>
 
       {showCategories ? (
