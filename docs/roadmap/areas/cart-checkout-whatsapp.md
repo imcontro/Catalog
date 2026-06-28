@@ -4,6 +4,32 @@
 
 ## Записи
 
+### 2026-06-28 - Корзина: формулировка бесплатной доставки
+
+- Work plan: `docs/work-plans/completed/2026-06-28-nonstandard-states-predeploy-check.work-plan.md`
+- Ветка: `feature/nonstandard-states-predeploy-check`
+- Pull Request:
+
+Сделано:
+
+- Итоговый блок корзины использует общее правило доставки из specs.
+- При сумме меньше `8000` руб. показывается остаток до бесплатной доставки по г. Грозный.
+- При сумме от `8000` руб. показывается бесплатная доставка по г. Грозный.
+- Логика оформления заказа и WhatsApp-сообщения не менялась.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- HTTP 200 для `/cart`.
+- Ручная проверка владельцем.
+
+Заметки:
+
+- WhatsApp-сообщение, актуализация корзины и очистка корзины после открытия WhatsApp не менялись.
+
 ### 2026-06-24 - Формат WhatsApp-сообщения без эмодзи с жирными подписями
 
 - Work plan: `docs/work-plans/completed/2026-06-18-whatsapp-message-format.work-plan.md`

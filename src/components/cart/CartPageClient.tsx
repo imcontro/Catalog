@@ -12,6 +12,7 @@ import {
   formatRub,
   getCartItemKey,
   getCartLineDisplayName,
+  getDeliveryHint,
   readStoredCartItems,
   removeResolvedDeletedItems,
   resolveStoredCartItems
@@ -334,7 +335,7 @@ export function CartPageClient({
             </p>
             {availableLines.length > 0 ? (
               <p className="cartSummaryDelivery">
-                {getCartSummaryDeliveryText(totalRub, freeDeliveryThresholdRub)}
+                {getDeliveryHint(totalRub, freeDeliveryThresholdRub)}
               </p>
             ) : null}
 
@@ -387,20 +388,6 @@ function CartLineName({
       ) : null}
     </>
   );
-}
-
-function getCartSummaryDeliveryText(totalRub: number, freeDeliveryThresholdRub: number) {
-  if (totalRub >= freeDeliveryThresholdRub) {
-    return "Доставка бесплатно по г. Грозный";
-  }
-
-  return `Наберите заказ на ${formatThresholdRub(
-    freeDeliveryThresholdRub
-  )} для бесплатной доставки по г. Грозный`;
-}
-
-function formatThresholdRub(value: number) {
-  return `${value.toLocaleString("ru-RU")} ₽`;
 }
 
 function CartEmptyState({ title, text }: { title: string; text: string }) {
