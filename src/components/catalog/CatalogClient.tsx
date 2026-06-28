@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type {
   ClientCatalogData,
   ClientCatalogFlavor,
@@ -66,6 +66,7 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
   const [, setCartResolveState] = useState<
     "idle" | "loading" | "ready" | "error"
   >("idle");
+  const categoryRailRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (initialCatalog) {
@@ -210,6 +211,19 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
     updateCatalogUrl(nextCategoryId, nextSearchQuery);
   }
 
+  function scrollCategories(direction: "left" | "right") {
+    const rail = categoryRailRef.current;
+
+    if (!rail) {
+      return;
+    }
+
+    rail.scrollBy({
+      left: direction === "left" ? -rail.clientWidth * 0.8 : rail.clientWidth * 0.8,
+      behavior: "smooth"
+    });
+  }
+
   function addProductToCart(
     product: ClientCatalogProduct,
     selectedFlavor: ClientCatalogFlavor | undefined
@@ -342,7 +356,19 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
           </label>
 
           <div className="categoryScroller">
-            <div className="categoryRail" aria-label="Категории напитков">
+            <button
+              aria-label="Прокрутить категории влево"
+              className="categoryScrollButton categoryScrollButtonLeft"
+              onClick={() => scrollCategories("left")}
+              type="button"
+            >
+              ‹
+            </button>
+            <div
+              className="categoryRail"
+              aria-label="Категории напитков"
+              ref={categoryRailRef}
+            >
               <button
                 className={
                   selectedCategoryId === allDrinksId
@@ -372,6 +398,14 @@ export function CatalogClient({ catalog: initialCatalog }: CatalogClientProps) {
             <span aria-hidden="true" className="categoryHint">
               ›
             </span>
+            <button
+              aria-label="Прокрутить категории вправо"
+              className="categoryScrollButton categoryScrollButtonRight"
+              onClick={() => scrollCategories("right")}
+              type="button"
+            >
+              ›
+            </button>
           </div>
         </div>
 
@@ -458,6 +492,7 @@ function ProductCard({
   const imageUrl = selectedFlavor?.imageUrl ?? product.imageUrl;
   const failedImage = failedImages[imageUrl] ?? false;
   const priceRub = selectedFlavor?.priceRub ?? product.priceRub;
+  const unitPriceLabel = formatUnitPrice(priceRub, product.packQuantity);
   const isSelectedFlavorOrderable = selectedFlavor?.isOrderable ?? product.isOrderable;
   const isCardOrderable = product.isOrderable && isSelectedFlavorOrderable;
 
@@ -494,6 +529,7 @@ function ProductCard({
           </h2>
           <div className="productMetaLine">
             <span className="productPackQuantity">{product.packQuantity} шт в уп</span>
+            <span className="productUnitPrice">{unitPriceLabel}</span>
           </div>
         </div>
 
@@ -888,6 +924,15 @@ function updateCatalogUrl(categoryId: string, searchQuery: string) {
 
 function formatRub(value: number) {
   return `${value.toLocaleString("ru-RU")} руб.`;
+}
+
+function formatUnitPrice(priceRub: number, packQuantity: number) {
+  const unitPriceRub = priceRub / packQuantity;
+  const formattedUnitPrice = unitPriceRub.toLocaleString("ru-RU", {
+    maximumFractionDigits: 1
+  });
+
+  return `≈ ${formattedUnitPrice} ₽/шт`;
 }
 
 function getEmptyState({

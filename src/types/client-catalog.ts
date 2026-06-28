@@ -22,6 +22,8 @@ export type ClientCatalogProduct = {
   name: string;
   priceRub: number;
   packQuantity: number;
+  unitPriceRub: number;
+  unitPriceLabel: string;
   imageUrl: string;
   status: ClientCatalogProductStatus;
   isOrderable: boolean;
