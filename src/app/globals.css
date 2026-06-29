@@ -8985,7 +8985,7 @@ body,
   }
 }
 
-/* Paper artboards transfer: docs/design/admin-paper-artboards.html. */
+/* Admin UI redesign styles. */
 .adminPage,
 .loginPage {
   --admin-bg: #ece7df;

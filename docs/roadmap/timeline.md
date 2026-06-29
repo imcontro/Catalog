@@ -6,6 +6,39 @@
 
 ## Записи
 
+### 2026-06-29 - Подготовка деплоя на Vercel
+
+- Work plan: `docs/work-plans/completed/2026-06-29-vercel-deployment-prep.work-plan.md`
+- Ветка: `feature/vercel-deployment-prep`
+- Pull Request:
+- Области: deployment, frontend, design, docs-process
+
+Сделано:
+
+- Specs обновлены под решение владельца: текущий чистый Supabase используется как рабочая база первой версии, перенос в отдельный Supabase-проект не требуется.
+- В правилах деплоя зафиксировано, что `PUBLIC_SITE_URL` берется из Vercel-ссылки после создания проекта или из домена после подключения.
+- Удалены устаревшие design artifacts админки `docs/design/admin-ui-map.html` и `docs/design/admin-paper-artboards.html`.
+- Удален production-доступный черновой route `/design-draft/reference-layout`.
+- Текущее состояние каталога подтверждено владельцем: `84` товара и `117` вкусов считаются правильными.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `npm.cmd run db:check`
+- `npm.cmd run storage:ensure`
+- `npm.cmd run catalog:import:check` с ожидаемым расхождением старого контрольного импорта: `84` товара, `117` вкусов, `82/82` публичных ссылок фото открываются.
+- `git diff --check`
+- Локальная HTTP-проверка production server: `/`, `/cart`, `/admin/login`, `/api/catalog` вернули `HTTP 200`, `/design-draft/reference-layout` вернул `HTTP 404`.
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Домен не подключался.
+- Vercel-проект, Pull Request и merge владелец делает сам.
+- Схема базы данных, товары, цены, фото, категории и серверные API не менялись.
+
 ### 2026-06-28 - Проверка нестандартных состояний перед деплоем
 
 - Work plan: `docs/work-plans/completed/2026-06-28-nonstandard-states-predeploy-check.work-plan.md`
