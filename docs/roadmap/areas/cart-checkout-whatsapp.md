@@ -4,6 +4,29 @@
 
 ## Записи
 
+### 2026-06-29 - Исправление открытия WhatsApp на телефоне
+
+- Work plan: `docs/work-plans/completed/2026-06-29-mobile-whatsapp-open-fix.work-plan.md`
+- Ветка: `feature/mobile-whatsapp-open-fix`
+- Pull Request:
+
+Сделано:
+
+- Открытие WhatsApp после оформления заказа переведено с popup-окна на переход текущей вкладки.
+- Ссылка `wa.me` и готовый текст WhatsApp-сообщения сохранены без изменений.
+- Актуализация корзины перед отправкой, исключение недоступных позиций и очистка корзины перед переходом сохранены.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+
+Заметки:
+
+- Исправление направлено на мобильные браузеры, которые блокируют `window.open` после асинхронных действий.
+
 ### 2026-06-28 - Корзина: формулировка бесплатной доставки
 
 - Work plan: `docs/work-plans/completed/2026-06-28-nonstandard-states-predeploy-check.work-plan.md`

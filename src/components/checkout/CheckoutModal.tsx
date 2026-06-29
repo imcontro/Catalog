@@ -180,21 +180,11 @@ export function CheckoutModal({
         return;
       }
 
-      const openedWindow = window.open(whatsAppUrl, "_blank");
-
-      if (!openedWindow) {
-        setWhatsAppError(
-          "WhatsApp не открылся. Проверьте приложение WhatsApp и попробуйте еще раз."
-        );
-        setSubmitState("idle");
-        return;
-      }
-
-      openedWindow.opener = null;
       setStoredItems([]);
       setResolvedCart(emptyResolvedCart);
       setRemovedItems([]);
       setSubmitState("sent");
+      window.location.href = whatsAppUrl;
     } catch {
       setFormError("Не удалось обновить корзину. Попробуйте отправить заказ позже.");
       setSubmitState("idle");
