@@ -4,6 +4,26 @@
 
 ## Записи
 
+### 2026-06-29 - Уточнение specs перед деплоем
+
+- Work plan: `docs/work-plans/completed/2026-06-29-vercel-deployment-prep.work-plan.md`
+- Ветка: `feature/vercel-deployment-prep`
+- Pull Request:
+
+Сделано:
+
+- Work plan деплоя оформлен и перенесен из `active` в `completed` после просьбы владельца сделать push.
+- Technical specs обновлены под решение владельца не переносить чистый рабочий Supabase в отдельный проект.
+- Roadmap обновлен перед commit и push.
+
+Проверено:
+
+- `git diff --check`
+
+Заметки:
+
+- Документация не добавляет новые функции, а фиксирует подтвержденные владельцем решения перед деплоем.
+
 ### 2026-06-05 - Подготовка приложения
 
 - Work plan: `docs/work-plans/completed/2026-06-05-application-foundation.work-plan.md`

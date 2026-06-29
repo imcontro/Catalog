@@ -4,6 +4,30 @@
 
 ## Записи
 
+### 2026-06-29 - Удаление чернового route перед деплоем
+
+- Work plan: `docs/work-plans/completed/2026-06-29-vercel-deployment-prep.work-plan.md`
+- Ветка: `feature/vercel-deployment-prep`
+- Pull Request:
+
+Сделано:
+
+- Удален production-доступный черновой route `/design-draft/reference-layout`.
+- Удален route локальных фото чернового макета `/design-draft/reference-layout/photo/[file]`.
+- Production build больше не включает черновые design-draft маршруты.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- Локальная HTTP-проверка: `/`, `/cart`, `/admin/login`, `/api/catalog` вернули `HTTP 200`, `/design-draft/reference-layout` вернул `HTTP 404`.
+- `git diff --check`
+
+Заметки:
+
+- Клиентский каталог, корзина, оформление заказа, админка и серверные API не менялись.
+
 ### 2026-06-28 - Нестандартные состояния перед деплоем
 
 - Work plan: `docs/work-plans/completed/2026-06-28-nonstandard-states-predeploy-check.work-plan.md`

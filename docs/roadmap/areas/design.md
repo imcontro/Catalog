@@ -4,6 +4,28 @@
 
 ## Записи
 
+### 2026-06-29 - Удаление устаревших design artifacts перед деплоем
+
+- Work plan: `docs/work-plans/completed/2026-06-29-vercel-deployment-prep.work-plan.md`
+- Ветка: `feature/vercel-deployment-prep`
+- Pull Request:
+
+Сделано:
+
+- Удалены устаревшие HTML-artifacts админки `docs/design/admin-ui-map.html` и `docs/design/admin-paper-artboards.html`.
+- В design spec зафиксировано, что эти artifacts уже перенесены в рабочую админку и больше не являются актуальным источником требований.
+- Актуальные визуальные правила админки остаются в design spec, завершенном work plan и рабочем интерфейсе.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run build`
+- `git diff --check`
+
+Заметки:
+
+- Рабочий UI админки не менялся, кроме технического комментария в CSS.
+
 ### 2026-06-28 - Админка: утвержденный Paper-дизайн и перенос в UI
 
 - Work plan: `docs/work-plans/completed/2026-06-28-admin-ui-ux-redesign.work-plan.md`
