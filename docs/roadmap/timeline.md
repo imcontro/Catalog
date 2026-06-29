@@ -6,6 +6,33 @@
 
 ## Записи
 
+### 2026-06-29 - Исправление открытия WhatsApp на телефоне
+
+- Work plan: `docs/work-plans/completed/2026-06-29-mobile-whatsapp-open-fix.work-plan.md`
+- Ветка: `feature/mobile-whatsapp-open-fix`
+- Pull Request:
+- Области: cart-checkout-whatsapp, frontend
+
+Сделано:
+
+- Исправлен способ открытия WhatsApp после оформления заказа на телефоне.
+- Формат ссылки `https://wa.me/{phone}?text={encodedMessage}` сохранен.
+- Вместо `window.open(..., "_blank")` используется переход текущей вкладки через `window.location.href`, чтобы мобильный браузер не блокировал открытие как popup.
+- Повторная актуализация корзины перед отправкой и очистка корзины перед переходом сохранены.
+
+Проверено:
+
+- `npm.cmd run lint`
+- `npm.cmd run typecheck`
+- `npm.cmd run build`
+- `git diff --check`
+- Владелец попросил сделать push.
+
+Заметки:
+
+- Номер WhatsApp, формат сообщения, доставка, товары, база данных и серверные API не менялись.
+- Финальная проверка открытия WhatsApp выполняется владельцем на телефоне после деплоя.
+
 ### 2026-06-29 - Подготовка деплоя на Vercel
 
 - Work plan: `docs/work-plans/completed/2026-06-29-vercel-deployment-prep.work-plan.md`
