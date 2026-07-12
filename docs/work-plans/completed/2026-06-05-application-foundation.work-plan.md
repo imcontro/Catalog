@@ -10,7 +10,7 @@
 
 ## Основание
 
-- `docs/01-development-roadmap.md`, раздел "Этап 1. Подготовка приложения";
+- тогдашний этап разработки: "Этап 1. Подготовка приложения";
 - `docs/00-global-spec.md`;
 - `docs/technical/00-technical-overview.technical-spec.md`;
 - `docs/design/00-design-spec.md`.

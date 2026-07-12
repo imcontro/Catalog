@@ -30,7 +30,7 @@
 - `docs/user-stories/02-admin-catalog-management.user-stories.md`;
 - `docs/user-stories/04-nonstandard-user-stories.user-stories.md`;
 - `docs/design/00-design-spec.md`;
-- `docs/01-development-roadmap.md`.
+- актуальный на момент создания плана порядок разработки.
 
 Specs уже описывают, что владелец должен иметь возможность отметить товар как **нет в наличии** и снять эту отметку. Этот plan уточняет только удобный способ выполнения уже согласованного действия на карточке товара в админке.
 
