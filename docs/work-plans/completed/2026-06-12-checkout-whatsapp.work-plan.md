@@ -16,14 +16,14 @@
 Клиент открывает оформление заказа, указывает адрес, выбирает способ оплаты и отправляет в WhatsApp понятное сообщение с доступными позициями заказа.
 ```
 
-Этот план закрывает этап roadmap **"Оформление заказа и WhatsApp"**.
+Этот план закрывает тогдашний этап разработки **"Оформление заказа и WhatsApp"**.
 
 ## 2. Основание в документации
 
 Работа опирается на:
 
 - `docs/00-global-spec.md`;
-- `docs/01-development-roadmap.md`, этап 7 **"Оформление заказа и WhatsApp"**;
+- тогдашний этап разработки: **"Оформление заказа и WhatsApp"**;
 - `docs/features/02-cart.feature-spec.md`;
 - `docs/features/03-checkout-and-whatsapp.feature-spec.md`;
 - `docs/features/04-delivery.feature-spec.md`;

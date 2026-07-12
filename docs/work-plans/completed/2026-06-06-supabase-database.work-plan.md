@@ -14,7 +14,7 @@ feature/supabase-database
 
 ## Основание
 
-- `docs/01-development-roadmap.md`, раздел "Этап 2. Supabase и база данных";
+- тогдашний этап разработки: "Этап 2. Supabase и база данных";
 - `docs/00-global-spec.md`;
 - `docs/technical/00-technical-overview.technical-spec.md`;
 - `docs/technical/01-data-model.technical-spec.md`;

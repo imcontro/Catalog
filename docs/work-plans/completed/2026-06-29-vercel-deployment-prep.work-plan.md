@@ -6,7 +6,7 @@
 
 ## 2. Основание
 
-- `docs/01-development-roadmap.md`, этап 11: подготовка к деплою.
+- тогдашний этап разработки: подготовка к деплою.
 - `docs/technical/07-deployment-and-operations.technical-spec.md`.
 - `docs/technical/08-supabase.technical-spec.md`.
 

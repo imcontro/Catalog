@@ -16,14 +16,14 @@
 В тестовом Supabase есть реальные категории, товары, вкусы, фото и связи между ними.
 ```
 
-Этот план закрывает этап roadmap **"Импорт реальных данных"**.
+Этот план закрывает тогдашний этап разработки **"Импорт реальных данных"**.
 
 ## 2. Основание в документации
 
 Работа опирается на:
 
 - `docs/00-global-spec.md`;
-- `docs/01-development-roadmap.md`, этап 4 **"Импорт реальных данных"**;
+- тогдашний этап разработки: **"Импорт реальных данных"**;
 - `docs/technical/01-data-model.technical-spec.md`;
 - `docs/technical/06-images-and-files.technical-spec.md`;
 - `docs/technical/08-supabase.technical-spec.md`;
